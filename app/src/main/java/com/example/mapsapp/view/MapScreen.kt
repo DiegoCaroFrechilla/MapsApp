@@ -6,13 +6,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.mapsapp.viewmodel.MapsViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
-fun MapScreen() {
+fun MapScreen(myViewModel: MapsViewModel) {
+    Mydrawer(myViewModel)
+}
+
+@Composable
+fun Map() {
     Column(
         modifier = Modifier
             .fillMaxSize()

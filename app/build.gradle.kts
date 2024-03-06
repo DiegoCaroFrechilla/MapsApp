@@ -77,4 +77,6 @@ dependencies {
     implementation("com.google.android.gms:play-services-maps:18.2.0") //APIMAPS
     implementation("com.google.android.gms:play-services-location:21.1.0") //APIMAPS
     implementation("androidx.navigation:navigation-common-ktx:2.7.6") //NAVIGATION
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2") //VIEWMDODEL
+    implementation("androidx.compose.material:material:1.6.1") //BOTTOMNAVIGATION
 }
