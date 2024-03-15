@@ -79,4 +79,5 @@ dependencies {
     implementation("androidx.navigation:navigation-common-ktx:2.7.6") //NAVIGATION
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2") //VIEWMDODEL
     implementation("androidx.compose.material:material:1.6.1") //BOTTOMNAVIGATION
+    implementation("androidx.compose.runtime:runtime-livedata:1.5.4") //LIVEDATA
 }
