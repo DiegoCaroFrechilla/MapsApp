@@ -1,5 +1,10 @@
 package com.example.mapsapp.view
 
+import android.Manifest
+import android.app.Activity
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,8 +40,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.mapsapp.Routes
 import com.example.mapsapp.viewmodel.MapsViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -47,7 +56,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.launch
 
 @Composable
-fun MapScreen(myViewModel: MapsViewModel) {
+fun MapScreen(navigationController: NavHostController, myViewModel: MapsViewModel) {
     Mydrawer(myViewModel)
 }
 
@@ -99,7 +108,7 @@ fun Mydrawer(myViewModel: MapsViewModel) {
             }
         }
     ) {
-        MyScaffold(myViewModel, state)
+        MyScaffold(navigationController, myViewModel, state)
     }
 }
 
@@ -123,12 +132,41 @@ fun MyTopAppBar(myViewModel: MapsViewModel, state: DrawerState) {
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun MyScaffold(myViewModel: MapsViewModel, state: DrawerState) {
+fun MyScaffold(
+    navigationController: NavHostController,
+    myViewModel: MapsViewModel,
+    state: DrawerState
+) {
     val sheetState = rememberModalBottomSheetState(false)
     val scope = rememberCoroutineScope()
     val showBottomSheet by myViewModel.showBottom.observeAsState(false)
     var locationName by remember { mutableStateOf("") }
     var locationDescription by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val isCameraPermissionGranted by myViewModel.cameraPermissionGranted.observeAsState(false)
+    val shouldShowPermissionRationale by myViewModel.shouldShowPermissionRationale.observeAsState(
+        false
+    )
+    val showPermissionDenied by myViewModel.showPermissionDenied.observeAsState(false)
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            if (isGranted) {
+                myViewModel.setCameraPermissionGranted(true)
+            } else {
+                myViewModel.setShouldShowPermissionRationale(
+                    ActivityCompat.shouldShowRequestPermissionRationale(
+                        context as Activity,
+                        Manifest.permission.CAMERA
+                    )
+                )
+                if (!shouldShowPermissionRationale) {
+                    Log.i("CameraScreen", "No podemos volver a pedir permisos")
+                    myViewModel.setShowPermissionDenied(true)
+                }
+            }
+        }
+    )
     Scaffold(
         topBar = { MyTopAppBar(myViewModel, state) }
     ) { contentPadding ->
@@ -162,10 +200,21 @@ fun MyScaffold(myViewModel: MapsViewModel, state: DrawerState) {
                             myViewModel.CreateMarker(locationName, locationDescription)
 
                         }) {
-                            Text(text = "Hide bottom sheet")
+                            Text(text = "Add Marker")
+                        }
+                        Button(onClick = {
+                            if (!isCameraPermissionGranted) {
+                                launcher.launch(android.Manifest.permission.CAMERA)
+                            } else {
+                                navigationController.navigate(Routes.TakePhotoScreen.routes)
+                            }
+                        }) {
+                            Text(text = "Camera")
                         }
                     }
-
+                    if (showPermissionDenied) {
+                        PermissionDeclinedScreen()
+                    }
                 }
             }
         }

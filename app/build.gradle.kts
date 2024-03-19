@@ -49,7 +49,7 @@ android {
         }
     }
 }
-secrets{
+secrets {
     propertiesFileName = "secrets.properties"
     defaultPropertiesFileName = "local.properties"
     ignoreList.add("keyToIgnore")
@@ -80,4 +80,10 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2") //VIEWMDODEL
     implementation("androidx.compose.material:material:1.6.1") //BOTTOMNAVIGATION
     implementation("androidx.compose.runtime:runtime-livedata:1.5.4") //LIVEDATA
+    implementation("androidx.camera:camera-core:1.3.2") //CAMERA
+    implementation("androidx.camera:camera-camera2:1.3.2") //CAMERA
+    implementation("androidx.camera:camera-lifecycle:1.3.2") //CAMERA
+    implementation("androidx.camera:camera-view:1.3.2") //CAMERA
+    implementation("androidx.camera:camera-extensions:1.3.2") //CAMERA
+    implementation("androidx.compose.material:material-icons-extended:1.6.3") //ICONS
 }

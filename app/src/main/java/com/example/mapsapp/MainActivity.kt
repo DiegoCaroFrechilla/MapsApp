@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.mapsapp.ui.theme.MapsAppTheme
 import com.example.mapsapp.view.MapScreen
 import com.example.mapsapp.view.Mydrawer
+import com.example.mapsapp.view.TakePhotoScreen
 import com.example.mapsapp.viewmodel.MapsViewModel
 
 class MainActivity : ComponentActivity() {
@@ -35,6 +36,13 @@ class MainActivity : ComponentActivity() {
                     ) {
                         composable(Routes.MapScreen.routes) {
                             MapScreen(
+                                navigationController,
+                                myViewModel
+                            )
+                        }
+                        composable(Routes.TakePhotoScreen.routes) {
+                            TakePhotoScreen(
+                                navigationController,
                                 myViewModel
                             )
                         }
