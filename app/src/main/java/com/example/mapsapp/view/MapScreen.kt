@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
@@ -29,7 +30,10 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
@@ -123,6 +127,8 @@ fun MyScaffold(myViewModel: MapsViewModel, state: DrawerState) {
     val sheetState = rememberModalBottomSheetState(false)
     val scope = rememberCoroutineScope()
     val showBottomSheet by myViewModel.showBottom.observeAsState(false)
+    var locationName by remember { mutableStateOf("") }
+    var locationDescription by remember { mutableStateOf("") }
     Scaffold(
         topBar = { MyTopAppBar(myViewModel, state) }
     ) { contentPadding ->
@@ -136,20 +142,36 @@ fun MyScaffold(myViewModel: MapsViewModel, state: DrawerState) {
                     },
                     sheetState = sheetState
                 ) {
-                    Button(onClick = {
-                        scope.launch { sheetState.hide() }.invokeOnCompletion {
-                            if (!sheetState.isVisible) {
-                                myViewModel.hideBottomSheet()
+                    Column(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        Text(text = "Title")
+                        TextField(
+                            value = locationName, onValueChange = {
+                                locationName = it
                             }
+                        )
+                        Text(text = "Description")
+                        TextField(
+                            value = locationDescription, onValueChange = {
+                                locationDescription = it
+                            }
+                        )
+                        Button(onClick = {
+                            myViewModel.CreateMarker(locationName, locationDescription)
+
+                        }) {
+                            Text(text = "Hide bottom sheet")
                         }
-                    }) {
-                        Text(text = "Hide bottom sheet")
                     }
+
                 }
             }
         }
     }
 }
+
 
 @Composable
 fun Map(myViewModel: MapsViewModel) {
@@ -167,7 +189,6 @@ fun Map(myViewModel: MapsViewModel) {
                 .fillMaxSize(),
             cameraPositionState = cameraPositionState,
             onMapClick = {
-
             }, onMapLongClick = {
                 myViewModel.showBottomSheet(it)
             }
@@ -175,8 +196,17 @@ fun Map(myViewModel: MapsViewModel) {
             Marker(
                 state = MarkerState(position = itb),
                 title = "ITB",
-                snippet = "Marker at ITB"
+                snippet = "Marker at ITB",
             )
+            val markers by myViewModel.markers.observeAsState()
+            markers?.forEach {
+                Marker(
+                    state = MarkerState(position = it.state),
+                    title = it.title,
+                    snippet = it.description,
+                )
+            }
+
         }
     }
 }
