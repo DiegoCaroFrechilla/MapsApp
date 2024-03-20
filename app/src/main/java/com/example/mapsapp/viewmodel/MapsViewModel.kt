@@ -1,7 +1,10 @@
 package com.example.mapsapp.viewmodel
 
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.mapsapp.R
 import com.google.android.gms.maps.model.LatLng
 
 class MapsViewModel : ViewModel() {
@@ -69,5 +72,6 @@ class MapsViewModel : ViewModel() {
         _showPermissionDenied.value = denied
     }
 
-
 }
+//TODO Cambiar nombre e importar fuentes
+val lemonMilk_Bold = FontFamily(Font(R.font.lemon_milk_bold))
