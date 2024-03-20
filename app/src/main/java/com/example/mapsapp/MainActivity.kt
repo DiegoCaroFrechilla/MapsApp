@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navigationController = rememberNavController()
-                    Mydrawer(myViewModel)
+                    Mydrawer(myViewModel, navigationController)
                     NavHost(
                         navController = navigationController,
                         startDestination = Routes.MapScreen.routes

@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +48,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.mapsapp.Routes
 import com.example.mapsapp.viewmodel.MapsViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -57,12 +61,11 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun MapScreen(navigationController: NavHostController, myViewModel: MapsViewModel) {
-    Mydrawer(myViewModel)
+    Mydrawer(myViewModel, navigationController)
 }
 
 @Composable
-fun Mydrawer(myViewModel: MapsViewModel) {
-    val navigationController = rememberNavController()
+fun Mydrawer(myViewModel: MapsViewModel, navigationController: NavHostController) {
     val scope = rememberCoroutineScope()
     val state: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     ModalNavigationDrawer(
@@ -130,7 +133,10 @@ fun MyTopAppBar(myViewModel: MapsViewModel, state: DrawerState) {
     )
 }
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
+@OptIn(
+    ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class,
+    ExperimentalPermissionsApi::class
+)
 @Composable
 fun MyScaffold(
     navigationController: NavHostController,
@@ -172,55 +178,63 @@ fun MyScaffold(
     ) { contentPadding ->
         Box(modifier = Modifier.padding(contentPadding))
         {
-            Map(myViewModel)
-            if (showBottomSheet) {
-                ModalBottomSheet(
-                    onDismissRequest = {
-                        myViewModel.hideBottomSheet()
-                    },
-                    sheetState = sheetState
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
+            val permissionState =
+                rememberPermissionState(permission = Manifest.permission.ACCESS_FINE_LOCATION)
+            LaunchedEffect(Unit) {
+                permissionState.launchPermissionRequest()
+            }
+            if (permissionState.status.isGranted) {
+                Map(myViewModel)
+                if (showBottomSheet) {
+                    ModalBottomSheet(
+                        onDismissRequest = {
+                            myViewModel.hideBottomSheet()
+                        },
+                        sheetState = sheetState
                     ) {
-                        Text(text = "Title")
-                        TextField(
-                            value = locationName, onValueChange = {
-                                locationName = it
-                            }
-                        )
-                        Text(text = "Description")
-                        TextField(
-                            value = locationDescription, onValueChange = {
-                                locationDescription = it
-                            }
-                        )
-                        Button(onClick = {
-                            myViewModel.CreateMarker(locationName, locationDescription)
+                        Column(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                        ) {
+                            Text(text = "Title")
+                            TextField(
+                                value = locationName, onValueChange = {
+                                    locationName = it
+                                }
+                            )
+                            Text(text = "Description")
+                            TextField(
+                                value = locationDescription, onValueChange = {
+                                    locationDescription = it
+                                }
+                            )
+                            Button(onClick = {
+                                myViewModel.CreateMarker(locationName, locationDescription)
 
-                        }) {
-                            Text(text = "Add Marker")
-                        }
-                        Button(onClick = {
-                            if (!isCameraPermissionGranted) {
-                                launcher.launch(android.Manifest.permission.CAMERA)
-                            } else {
-                                navigationController.navigate(Routes.TakePhotoScreen.routes)
+                            }) {
+                                Text(text = "Add Marker")
                             }
-                        }) {
-                            Text(text = "Camera")
+                            Button(onClick = {
+                                if (!isCameraPermissionGranted) {
+                                    launcher.launch(android.Manifest.permission.CAMERA)
+                                } else {
+                                    navigationController.navigate(Routes.TakePhotoScreen.routes)
+                                }
+                            }) {
+                                Text(text = "Camera")
+                            }
                         }
-                    }
-                    if (showPermissionDenied) {
-                        PermissionDeclinedScreen()
+                        if (showPermissionDenied) {
+                            PermissionDeclinedScreen()
+                        }
                     }
                 }
+            } else {
+                Text(text = "Need permission")
             }
         }
     }
 }
-
 
 @Composable
 fun Map(myViewModel: MapsViewModel) {
@@ -255,7 +269,6 @@ fun Map(myViewModel: MapsViewModel) {
                     snippet = it.description,
                 )
             }
-
         }
     }
 }
