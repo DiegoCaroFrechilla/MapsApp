@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
+import com.example.mapsapp.Routes
 import com.example.mapsapp.viewmodel.MapsViewModel
 import java.lang.Exception
 
@@ -78,7 +79,9 @@ fun TakePhotoScreen(navigationController: NavHostController, myViewModel: MapsVi
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = {
+                    navigationController.navigate(Routes.GalleryScreen.routes)
+                }) {
                     Icon(imageVector = Icons.Default.Photo, contentDescription = "Open Gallery")
                 }
                 IconButton(onClick = {

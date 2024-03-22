@@ -1,7 +1,9 @@
 package com.example.mapsapp.view
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.location.Location
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -50,11 +52,13 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.mapsapp.MainActivity
 import com.example.mapsapp.Routes
 import com.example.mapsapp.viewmodel.MapsViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -147,7 +151,7 @@ fun MyScaffold(
     myViewModel: MapsViewModel,
     state: DrawerState
 ) {
-    val sheetState = rememberModalBottomSheetState(false)
+    val sheetState = rememberModalBottomSheetState(true)
     val scope = rememberCoroutineScope()
     val showBottomSheet by myViewModel.showBottom.observeAsState(false)
     var locationName by remember { mutableStateOf("") }
@@ -239,8 +243,27 @@ fun MyScaffold(
     }
 }
 
+@SuppressLint("MissingPermission")
 @Composable
 fun Map(myViewModel: MapsViewModel) {
+    val context = LocalContext.current
+    val fusedLocationProviderClient =
+        remember { LocationServices.getFusedLocationProviderClient(context) }
+    var lastKnowLocation by remember { mutableStateOf<Location?>(null) }
+    var deviceLatLng by remember { mutableStateOf(LatLng(0.0, 0.0)) }
+    val cameraPositionState =
+        rememberCameraPositionState { position = CameraPosition.fromLatLngZoom(deviceLatLng, 18f) }
+    val locationResult = fusedLocationProviderClient.getCurrentLocation(100, null)
+
+    locationResult.addOnCompleteListener(context as MainActivity) { task ->
+        if (task.isSuccessful) {
+            lastKnowLocation = task.result
+            deviceLatLng = LatLng(lastKnowLocation!!.latitude, lastKnowLocation!!.longitude)
+            cameraPositionState.position = CameraPosition.fromLatLngZoom(deviceLatLng, 18f)
+        } else {
+            Log.e("Error", "Exception: %s", task.exception)
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()

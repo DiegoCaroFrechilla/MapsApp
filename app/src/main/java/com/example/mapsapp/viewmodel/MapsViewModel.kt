@@ -73,5 +73,13 @@ class MapsViewModel : ViewModel() {
     }
 
 }
+
 //TODO Cambiar nombre e importar fuentes
-val lemonMilk_Bold = FontFamily(Font(R.font.lemon_milk_bold))
+val lemonMilkBold = FontFamily(Font(R.font.lemon_milk_bold))
+val lemonMilkBoldItalic = FontFamily(Font(R.font.lemon_milk_bold_italic))
+val lemonMilkLight = FontFamily(Font(R.font.lemon_milk_light))
+val lemonMilkLightItalic = FontFamily(Font(R.font.lemon_milk_light_italic))
+val lemonMilkMedium = FontFamily(Font(R.font.lemon_milk_medium))
+val lemonMilkMediumItalic = FontFamily(Font(R.font.lemon_milk_medium_italic))
+val lemonMilkRegular = FontFamily(Font(R.font.lemon_milk_regular))
+val lemonMilkRegularItalic = FontFamily(Font(R.font.lemon_milk_regular_italic))
