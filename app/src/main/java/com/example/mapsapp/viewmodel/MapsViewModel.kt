@@ -1,19 +1,28 @@
 package com.example.mapsapp.viewmodel
 
+import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mapsapp.R
+import com.example.mapsapp.model.Repository
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.firestore.DocumentChange
 
 class MapsViewModel : ViewModel() {
     //Marker
     data class Marker(
-        val state: LatLng,
+        var markerID: String? = null,
         val title: String,
+        val latitude: Double,
+        val longitude: Double,
         val description: String,
-    )
+        var image: Bitmap?
+    ) {
+        constructor() : this(null, "", 0.0, 0.0, "", null)
+    }
 
     private val _markers = MutableLiveData<MutableList<Marker>>(mutableListOf())
     val markers = _markers
@@ -23,6 +32,8 @@ class MapsViewModel : ViewModel() {
     private val _geolocation = MutableLiveData(LatLng(0.0, 0.0))
     val geolocation = _geolocation
 
+    private val _markerImage = MutableLiveData<Bitmap>()
+    val markerImage = _markerImage
     fun showBottomSheet(latLng: LatLng) {
         _showBottom.value = true
         _geolocation.value = latLng
@@ -38,9 +49,12 @@ class MapsViewModel : ViewModel() {
         val newMarker =
             geolocation.value?.let {
                 Marker(
-                    state = it,
+                    markerID = null,
                     title = locationName,
-                    description = locationDescription
+                    latitude = _geolocation.value!!.latitude,
+                    longitude = _geolocation.value!!.longitude,
+                    description = locationDescription,
+                    image = _markerImage.value
                 )
             }
         if (newMarker != null) {
@@ -72,6 +86,43 @@ class MapsViewModel : ViewModel() {
         _showPermissionDenied.value = denied
     }
 
+    //FIRESTORE
+
+    val repository = Repository()
+    fun getMarkers() {
+        repository.getMarkers().addSnapshotListener { value, error ->
+            if (error != null) {
+                Log.e("Firestore error", error.message.toString())
+                return@addSnapshotListener
+            }
+            val tempList = mutableListOf<Marker>()
+            for (dc: DocumentChange in value?.documentChanges!!) {
+                if (dc.type == DocumentChange.Type.ADDED) {
+                    val newMarker = dc.document.toObject(Marker::class.java)
+                    newMarker.markerID = dc.document.id
+                    tempList.add(newMarker)
+                }
+            }
+            _markers.value = tempList
+        }
+    }
+
+    fun getMarker(markerID: String) {
+        repository.getMarker(markerID).addSnapshotListener { value, error ->
+            if (error != null) {
+                Log.w("UserRepository", "Listen failed", error)
+                return@addSnapshotListener
+            }
+            if (value != null && value.exists()) {
+                val marker = value.toObject(Marker::class.java)
+                if (marker != null) {
+                    marker.markerID = markerID
+                }
+            } else {
+                Log.d("UserRepository", "Current data: null")
+            }
+        }
+    }
 }
 
 //TODO Cambiar nombre e importar fuentes

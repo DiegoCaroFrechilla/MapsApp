@@ -17,17 +17,24 @@ import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
     primary = Jasmine, //Notifications Bar
-    secondary = PurpleGrey80,
-    tertiary = Pink80,
+    secondary = PrussianBlue,
+    tertiary = CoolGray2,
     background = RichBlack,
-    surface = Gunmetal
+    surface = Gunmetal,
+    outline = PrussianBlue,
+    onSurfaceVariant = CoolGray2
+
 
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    primary = Jasmine, //Notifications Bar
+    secondary = PrussianBlue,
+    tertiary = CoolGray2,
+    background = RichBlack,
+    surface = Gunmetal,
+    outline = PrussianBlue,
+    onSurfaceVariant = CoolGray2
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),

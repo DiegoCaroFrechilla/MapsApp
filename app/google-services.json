@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "661950328500",
+    "project_id": "natural-bus-416311",
+    "storage_bucket": "natural-bus-416311.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:661950328500:android:80840b1b694839eb0671e1",
+        "android_client_info": {
+          "package_name": "com.example.mapsapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCe7nTx3EpgC4_akFDd0tieTK9hQfo6g68"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

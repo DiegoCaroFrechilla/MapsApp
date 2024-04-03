@@ -7,22 +7,21 @@ import android.location.Location
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.OutlinedTextField
-import androidx.compose.material3.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -46,15 +45,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.mapsapp.MainActivity
 import com.example.mapsapp.Routes
 import com.example.mapsapp.viewmodel.MapsViewModel
+import com.example.mapsapp.viewmodel.lemonMilkMediumItalic
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -204,31 +204,61 @@ fun MyScaffold(
                             modifier = Modifier
                                 .padding(horizontal = 16.dp)
                         ) {
-                            Text(text = "Name")
+                            TextBottomSheet(
+                                text = "Name",
+                                lemonMilkMediumItalic,
+                                topPadding = 0,
+                                bottomPadding = 10
+                            )
                             OutlinedTextField(
                                 value = locationName,
                                 onValueChange = { locationName = it },
                             )
-                            Text(text = "Description")
-                            OutlinedTextField(
-                                value = locationDescription, onValueChange = {
-                                    locationDescription = it
-                                }
+                            /*                            TextBottomSheet(text = "Description", lemonMilkBoldItalic)
+                                                        TextBottomSheet(text = "Description", fontFamily = lemonMilkLight)
+                                                        TextBottomSheet(text = "Description", fontFamily = lemonMilkBold)
+                                                        TextBottomSheet(text = "Description", fontFamily = lemonMilkLight)
+                                                        TextBottomSheet(text = "Description", fontFamily = lemonMilkLightItalic)
+                                                        TextBottomSheet(text = "Description", fontFamily = lemonMilkMedium)*/
+                            TextBottomSheet(
+                                text = "Description",
+                                fontFamily = lemonMilkMediumItalic,
+                                topPadding = 10,
+                                bottomPadding = 10
                             )
-                            Button(onClick = {
-                                myViewModel.CreateMarker(locationName, locationDescription)
-
-                            }) {
-                                Text(text = "Add Marker")
-                            }
-                            Button(onClick = {
-                                if (!isCameraPermissionGranted) {
-                                    launcher.launch(android.Manifest.permission.CAMERA)
-                                } else {
-                                    navigationController.navigate(Routes.TakePhotoScreen.routes)
+                            /*TextBottomSheet(text = "Description", fontFamily = lemonMilkRegularItalic)
+                            TextBottomSheet(text = "Description", fontFamily = lemonMilkRegular)*/
+                            OutlinedTextField(
+                                value = locationDescription,
+                                onValueChange = {
+                                    locationDescription = it
+                                },
+                            )
+                            Row() {
+                                Button(
+                                    onClick = {
+                                        if (!isCameraPermissionGranted) {
+                                            launcher.launch(android.Manifest.permission.CAMERA)
+                                        } else {
+                                            navigationController.navigate(Routes.TakePhotoScreen.routes)
+                                        }
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.primary,
+                                        contentColor = MaterialTheme.colorScheme.tertiary
+                                    )
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.PhotoCamera,
+                                        contentDescription = "Take photo",
+                                    )
                                 }
-                            }) {
-                                Text(text = "Camera")
+                                Button(onClick = {
+                                    myViewModel.CreateMarker(locationName, locationDescription)
+
+                                }) {
+                                    Text(text = "Add Marker")
+                                }
                             }
                         }
                         if (showPermissionDenied) {
@@ -241,6 +271,18 @@ fun MyScaffold(
             }
         }
     }
+}
+
+@Composable
+fun TextBottomSheet(text: String, fontFamily: FontFamily, topPadding: Int, bottomPadding: Int) {
+    Text(
+        text = text,
+        modifier = Modifier
+            .padding(top = topPadding.dp, bottom = bottomPadding.dp),
+        style = TextStyle(
+            fontFamily = fontFamily,
+        )
+    )
 }
 
 @SuppressLint("MissingPermission")
@@ -290,7 +332,7 @@ fun Map(myViewModel: MapsViewModel) {
             val markers by myViewModel.markers.observeAsState()
             markers?.forEach {
                 Marker(
-                    state = MarkerState(position = it.state),
+                    state = MarkerState(LatLng(it.latitude, it.longitude)),
                     title = it.title,
                     snippet = it.description,
                 )

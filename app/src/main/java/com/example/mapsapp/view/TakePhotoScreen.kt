@@ -89,7 +89,7 @@ fun TakePhotoScreen(navigationController: NavHostController, myViewModel: MapsVi
                         //TODO
                     }
                 }) {
-                    Icon(imageVector = Icons.Default.PhotoCamera, contentDescription = "Take photo")
+                        Icon(imageVector = Icons.Default.PhotoCamera, contentDescription = "Take photo")
                 }
             }
         }
