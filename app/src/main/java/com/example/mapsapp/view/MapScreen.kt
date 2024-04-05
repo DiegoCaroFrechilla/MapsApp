@@ -7,14 +7,21 @@ import android.location.Location
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.TextFieldColors
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
@@ -26,6 +33,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import com.example.mapsapp.ui.theme.PrussianBlue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -53,8 +61,20 @@ import androidx.core.app.ActivityCompat
 import androidx.navigation.NavHostController
 import com.example.mapsapp.MainActivity
 import com.example.mapsapp.Routes
+import com.example.mapsapp.ui.theme.CoolGray2
+import com.example.mapsapp.ui.theme.Gunmetal
+import com.example.mapsapp.ui.theme.Jasmine
+import com.example.mapsapp.ui.theme.OxfordBlue
+import com.example.mapsapp.ui.theme.RichBlack
 import com.example.mapsapp.viewmodel.MapsViewModel
+import com.example.mapsapp.viewmodel.lemonMilkBold
+import com.example.mapsapp.viewmodel.lemonMilkBoldItalic
+import com.example.mapsapp.viewmodel.lemonMilkLight
+import com.example.mapsapp.viewmodel.lemonMilkLightItalic
+import com.example.mapsapp.viewmodel.lemonMilkMedium
 import com.example.mapsapp.viewmodel.lemonMilkMediumItalic
+import com.example.mapsapp.viewmodel.lemonMilkRegular
+import com.example.mapsapp.viewmodel.lemonMilkRegularItalic
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -208,33 +228,42 @@ fun MyScaffold(
                                 text = "Name",
                                 lemonMilkMediumItalic,
                                 topPadding = 0,
-                                bottomPadding = 10
+                                bottomPadding = 10,
                             )
                             OutlinedTextField(
                                 value = locationName,
                                 onValueChange = { locationName = it },
+                                textStyle = TextStyle(fontFamily = lemonMilkRegularItalic),
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    textColor = Jasmine,
+                                    focusedBorderColor = CoolGray2,
+                                    unfocusedBorderColor = CoolGray2,
+                                    cursorColor = Jasmine
+                                )
                             )
-                            /*                            TextBottomSheet(text = "Description", lemonMilkBoldItalic)
-                                                        TextBottomSheet(text = "Description", fontFamily = lemonMilkLight)
-                                                        TextBottomSheet(text = "Description", fontFamily = lemonMilkBold)
-                                                        TextBottomSheet(text = "Description", fontFamily = lemonMilkLight)
-                                                        TextBottomSheet(text = "Description", fontFamily = lemonMilkLightItalic)
-                                                        TextBottomSheet(text = "Description", fontFamily = lemonMilkMedium)*/
                             TextBottomSheet(
                                 text = "Description",
                                 fontFamily = lemonMilkMediumItalic,
                                 topPadding = 10,
                                 bottomPadding = 10
                             )
-                            /*TextBottomSheet(text = "Description", fontFamily = lemonMilkRegularItalic)
-                            TextBottomSheet(text = "Description", fontFamily = lemonMilkRegular)*/
                             OutlinedTextField(
                                 value = locationDescription,
-                                onValueChange = {
-                                    locationDescription = it
-                                },
+                                onValueChange = { locationDescription = it },
+                                textStyle = TextStyle(fontFamily = lemonMilkRegularItalic),
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    textColor = Jasmine,
+                                    focusedBorderColor = CoolGray2,
+                                    unfocusedBorderColor = CoolGray2,
+                                    cursorColor = Jasmine
+                                )
                             )
-                            Row() {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 10.dp, bottom = 20.dp),
+                                horizontalArrangement = Arrangement.End
+                            ) {
                                 Button(
                                     onClick = {
                                         if (!isCameraPermissionGranted) {
@@ -243,9 +272,10 @@ fun MyScaffold(
                                             navigationController.navigate(Routes.TakePhotoScreen.routes)
                                         }
                                     },
+                                    shape = RoundedCornerShape(8.dp),
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = MaterialTheme.colorScheme.primary,
-                                        contentColor = MaterialTheme.colorScheme.tertiary
+                                        contentColor = Gunmetal
                                     )
                                 ) {
                                     Icon(
@@ -253,11 +283,21 @@ fun MyScaffold(
                                         contentDescription = "Take photo",
                                     )
                                 }
-                                Button(onClick = {
-                                    myViewModel.CreateMarker(locationName, locationDescription)
-
-                                }) {
-                                    Text(text = "Add Marker")
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Button(
+                                    onClick = {
+                                        myViewModel.CreateMarker(locationName, locationDescription)
+                                    },
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.primary,
+                                        contentColor = Gunmetal
+                                    )
+                                ) {
+                                    Text(
+                                        text = "Add Marker",
+                                        style = TextStyle(fontFamily = lemonMilkMediumItalic)
+                                    )
                                 }
                             }
                         }

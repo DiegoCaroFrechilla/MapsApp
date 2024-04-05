@@ -37,6 +37,7 @@ import androidx.navigation.NavHostController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.mapsapp.R
+import com.example.mapsapp.ui.theme.RichBlack
 import com.example.mapsapp.viewmodel.MapsViewModel
 
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -68,6 +69,7 @@ fun GalleryScreen(navigationController: NavHostController, myViewModel: MapsView
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxSize()
+            .background(color = RichBlack)
     ) {
         Button(onClick = {
             launchImage.launch("image/*")
