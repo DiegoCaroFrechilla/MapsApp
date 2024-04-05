@@ -90,5 +90,6 @@ dependencies {
     implementation("com.google.accompanist:accompanist-permissions:0.28.0")
     implementation(platform("com.google.firebase:firebase-bom:32.8.0")) //FIREBASE
     implementation("com.google.firebase:firebase-firestore-ktx") //FIRESTORE
-
+    implementation ("com.google.firebase:firebase-storage-ktx")
+    implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
 }

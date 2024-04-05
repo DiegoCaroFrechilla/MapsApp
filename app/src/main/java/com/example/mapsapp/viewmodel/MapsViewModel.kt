@@ -1,6 +1,7 @@
 package com.example.mapsapp.viewmodel
 
 import android.graphics.Bitmap
+import android.net.Uri
 import android.util.Log
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -10,6 +11,10 @@ import com.example.mapsapp.R
 import com.example.mapsapp.model.Repository
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.DocumentChange
+import com.google.firebase.storage.FirebaseStorage
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class MapsViewModel : ViewModel() {
     //Marker
@@ -121,6 +126,25 @@ class MapsViewModel : ViewModel() {
             } else {
                 Log.d("UserRepository", "Current data: null")
             }
+        }
+    }
+
+    fun uploadImage(imageUri: Uri?) {
+        val formatter = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.getDefault())
+        val now = Date()
+        val fileName = formatter.format(now)
+        val storage = FirebaseStorage.getInstance().getReference("images/$fileName")
+        if (imageUri != null) {
+            storage.putFile(imageUri)
+                .addOnSuccessListener {
+                    Log.i("IMAGE UPLOAD", "Image upload successfully")
+                    storage.downloadUrl.addOnSuccessListener {
+                        Log.i("IMAGE", it.toString())
+                    }
+                }
+                .addOnFailureListener {
+                    Log.i("IMAGE UPLOAD", "Image upload failed")
+                }
         }
     }
 }

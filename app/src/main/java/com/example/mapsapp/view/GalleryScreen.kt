@@ -2,6 +2,7 @@ package com.example.mapsapp.view
 
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
+import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import androidx.compose.material3.Button
@@ -33,14 +34,18 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.navigation.NavHostController
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.example.mapsapp.R
 import com.example.mapsapp.viewmodel.MapsViewModel
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun GalleryScreen(navigationController: NavHostController, myViewModel: MapsViewModel) {
     val context = LocalContext.current
     val img: Bitmap? = ContextCompat.getDrawable(context, R.drawable.empty_image)?.toBitmap()
+    var uri: Uri? by remember { mutableStateOf(null) }
     var bitmap by remember { mutableStateOf(img) }
     val launchImage = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
@@ -55,6 +60,7 @@ fun GalleryScreen(navigationController: NavHostController, myViewModel: MapsView
                     ImageDecoder.decodeBitmap(it1)
                 }!!
             }
+            uri = it
         }
     )
     Column(
@@ -68,6 +74,11 @@ fun GalleryScreen(navigationController: NavHostController, myViewModel: MapsView
         }) {
             Text(text = "Open Gallery")
         }
+        Button(onClick = {
+            if (uri != null) myViewModel.uploadImage(uri)
+        }) {
+            Text(text = "Upload image")
+        }
         Image(
             bitmap = bitmap!!.asImageBitmap(),
             contentDescription = null,
@@ -78,5 +89,11 @@ fun GalleryScreen(navigationController: NavHostController, myViewModel: MapsView
                 .background(Color.Blue)
                 .border(width = 1.dp, color = Color.White, shape = CircleShape)
         )
+        /*        GlideImage(
+                    model = imageUri,
+                    contentDescription = "Image from Storage",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.size(100.dp)
+                )*/
     }
 }
