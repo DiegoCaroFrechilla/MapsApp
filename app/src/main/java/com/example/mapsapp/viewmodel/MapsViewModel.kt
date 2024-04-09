@@ -64,6 +64,7 @@ class MapsViewModel : ViewModel() {
             }
         if (newMarker != null) {
             currentMarkers.add(newMarker)
+            Repository().addMarker(newMarker)
         }
         _markers.value = currentMarkers
         hideBottomSheet()

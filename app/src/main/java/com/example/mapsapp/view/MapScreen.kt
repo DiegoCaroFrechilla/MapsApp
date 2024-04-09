@@ -18,9 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.TextFieldColors
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -33,7 +31,6 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import com.example.mapsapp.ui.theme.PrussianBlue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -59,21 +56,15 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.mapsapp.MainActivity
 import com.example.mapsapp.Routes
+import com.example.mapsapp.model.DrawerItems
 import com.example.mapsapp.ui.theme.CoolGray2
 import com.example.mapsapp.ui.theme.Gunmetal
 import com.example.mapsapp.ui.theme.Jasmine
-import com.example.mapsapp.ui.theme.OxfordBlue
-import com.example.mapsapp.ui.theme.RichBlack
 import com.example.mapsapp.viewmodel.MapsViewModel
-import com.example.mapsapp.viewmodel.lemonMilkBold
-import com.example.mapsapp.viewmodel.lemonMilkBoldItalic
-import com.example.mapsapp.viewmodel.lemonMilkLight
-import com.example.mapsapp.viewmodel.lemonMilkLightItalic
-import com.example.mapsapp.viewmodel.lemonMilkMedium
 import com.example.mapsapp.viewmodel.lemonMilkMediumItalic
-import com.example.mapsapp.viewmodel.lemonMilkRegular
 import com.example.mapsapp.viewmodel.lemonMilkRegularItalic
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -96,6 +87,12 @@ fun MapScreen(navigationController: NavHostController, myViewModel: MapsViewMode
 fun Mydrawer(myViewModel: MapsViewModel, navigationController: NavHostController) {
     val scope = rememberCoroutineScope()
     val state: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val drawerItems = listOf(
+        DrawerItems.Map,
+        DrawerItems.SavedMarkers
+    )
+    val navBackStackEntry by navigationController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
     ModalNavigationDrawer(
         drawerState = state,
         gesturesEnabled = false,
@@ -120,26 +117,44 @@ fun Mydrawer(myViewModel: MapsViewModel, navigationController: NavHostController
                             contentDescription = "Close Button",
                         )
                     }
-
                     Text(
-                        "Drawer title",
+                        "Menu",
                         modifier = Modifier
                             .padding(top = 30.dp)
                     )
                 }
                 Divider()
-                androidx.compose.material3.NavigationDrawerItem(label = { Text(text = "Drawer Item 1") },
-                    selected = false,
-                    onClick = {
-                        scope.launch {
-                            state.close()
+                drawerItems.forEach { item ->
+                    androidx.compose.material3.NavigationDrawerItem(label = {
+                        Text(
+                            text = item.label,
+                            style = TextStyle(
+                                fontFamily = lemonMilkRegularItalic,
+                                color = if (currentRoute == item.route) {
+                                    Jasmine
+                                } else {
+                                    CoolGray2
+                                }
+                            )
+                        )
+                    },
+                        selected = false,
+                        onClick = {
+                            if (currentRoute != item.route) {
+                                navigationController.navigate(item.route)
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
     ) {
-        MyScaffold(navigationController, myViewModel, state)
+        if (currentRoute ==Routes.MapScreen.routes) {
+            ScaffoldMapScreen(navigationController, myViewModel, state)
+        } else {
+            //TODO
+            ScaffoldSavedMarkerScreen(navigationController, myViewModel, state)
+        }
     }
 }
 
@@ -166,7 +181,7 @@ fun MyTopAppBar(myViewModel: MapsViewModel, state: DrawerState) {
     ExperimentalPermissionsApi::class
 )
 @Composable
-fun MyScaffold(
+fun ScaffoldMapScreen(
     navigationController: NavHostController,
     myViewModel: MapsViewModel,
     state: DrawerState
