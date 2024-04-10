@@ -1,5 +1,6 @@
 package com.example.mapsapp
 
+import LoginScreen
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -39,6 +40,9 @@ class MainActivity : ComponentActivity() {
                         navController = navigationController,
                         startDestination = Routes.MapScreen.routes
                     ) {
+                        composable(Routes.LoginScreen.routes) {
+                            LoginScreen(navigationController, myViewModel)
+                        }
                         composable(Routes.MapScreen.routes) {
                             MapScreen(
                                 navigationController,

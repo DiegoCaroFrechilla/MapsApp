@@ -5,11 +5,14 @@ import android.net.Uri
 import android.util.Log
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mapsapp.R
+import com.example.mapsapp.Routes
 import com.example.mapsapp.model.Repository
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.storage.FirebaseStorage
 import java.text.SimpleDateFormat
@@ -147,6 +150,56 @@ class MapsViewModel : ViewModel() {
                     Log.i("IMAGE UPLOAD", "Image upload failed")
                 }
         }
+    }
+
+    //Authentication
+
+    private val auth = FirebaseAuth.getInstance()
+
+    private val _goToNext = MutableLiveData(false)
+    val goToNext = _goToNext
+
+    private val _userId = MutableLiveData<String>()
+    val userId = _userId
+
+    private val _loggedUser = MutableLiveData<String>()
+    val loggedUser = _loggedUser
+
+    fun register(username: String, password: String) {
+        auth.createUserWithEmailAndPassword(username, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    _goToNext.value = true
+                } else {
+                    _goToNext.value = false
+                    Log.d("Error", "Error creating user: ${task.result}")
+                }
+//                modifyProcessing()
+            }
+    }
+
+
+    fun login(username: String?, password: String?) {
+        auth.signInWithEmailAndPassword(username!!, password!!)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    _userId.value = task.result.user?.uid
+                    _loggedUser.value = task.result.user?.email?.split("@")?.get(0)
+                    _goToNext.value = true
+                } else {
+                    _goToNext.value = false
+                    Log.d("Error", "Error signing in ${task.result}")
+                }
+//                modifyProcessing()
+            }
+    }
+
+/*    private fun modifyProcessing(): AuthResult? {
+//TODO Circle progress bar
+    }*/
+
+    fun logout() {
+        auth.signOut()
     }
 }
 

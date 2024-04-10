@@ -228,6 +228,7 @@ fun ScaffoldMapScreen(
             }
             if (permissionState.status.isGranted) {
                 Map(myViewModel)
+                myViewModel.getMarkers()
                 if (showBottomSheet) {
                     ModalBottomSheet(
                         onDismissRequest = {
