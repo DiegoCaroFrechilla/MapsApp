@@ -35,7 +35,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.navigation.NavHostController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
 import com.example.mapsapp.R
 import com.example.mapsapp.ui.theme.RichBlack
 import com.example.mapsapp.viewmodel.MapsViewModel
@@ -77,10 +76,14 @@ fun GalleryScreen(navigationController: NavHostController, myViewModel: MapsView
             Text(text = "Open Gallery")
         }
         Button(onClick = {
-            if (uri != null) myViewModel.uploadImage(uri)
+            if (uri != null) myViewModel.choosenImage(bitmap!!, uri)
+            for (back in 1..2) {
+                navigationController.navigateUp()
+            }
         }) {
-            Text(text = "Upload image")
+            Text(text = "Select Image")
         }
+
         Image(
             bitmap = bitmap!!.asImageBitmap(),
             contentDescription = null,

@@ -7,6 +7,7 @@ import android.location.Location
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,6 +51,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -57,6 +59,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.example.mapsapp.MainActivity
 import com.example.mapsapp.Routes
 import com.example.mapsapp.model.DrawerItems
@@ -149,7 +153,7 @@ fun Mydrawer(myViewModel: MapsViewModel, navigationController: NavHostController
             }
         }
     ) {
-        if (currentRoute ==Routes.MapScreen.routes) {
+        if (currentRoute == Routes.MapScreen.routes) {
             ScaffoldMapScreen(navigationController, myViewModel, state)
         } else {
             //TODO
@@ -178,7 +182,7 @@ fun MyTopAppBar(myViewModel: MapsViewModel, state: DrawerState) {
 
 @OptIn(
     ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class,
-    ExperimentalPermissionsApi::class
+    ExperimentalPermissionsApi::class, ExperimentalGlideComposeApi::class
 )
 @Composable
 fun ScaffoldMapScreen(
@@ -189,13 +193,15 @@ fun ScaffoldMapScreen(
     val sheetState = rememberModalBottomSheetState(true)
     val scope = rememberCoroutineScope()
     val showBottomSheet by myViewModel.showBottom.observeAsState(false)
-    var locationName by remember { mutableStateOf("") }
-    var locationDescription by remember { mutableStateOf("") }
+    val locationName by myViewModel.locationName.observeAsState()
+    val locationDescription by myViewModel.locationDescription.observeAsState()
     val context = LocalContext.current
     val isCameraPermissionGranted by myViewModel.cameraPermissionGranted.observeAsState(false)
     val shouldShowPermissionRationale by myViewModel.shouldShowPermissionRationale.observeAsState(
         false
     )
+    val uri by myViewModel.imageUri.observeAsState()
+    val image by myViewModel.image.observeAsState()
     val showPermissionDenied by myViewModel.showPermissionDenied.observeAsState(false)
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -247,8 +253,8 @@ fun ScaffoldMapScreen(
                                 bottomPadding = 10,
                             )
                             OutlinedTextField(
-                                value = locationName,
-                                onValueChange = { locationName = it },
+                                value = locationName!!,
+                                onValueChange = { myViewModel.changeTitle(it) },
                                 textStyle = TextStyle(fontFamily = lemonMilkRegularItalic),
                                 colors = TextFieldDefaults.outlinedTextFieldColors(
                                     textColor = Jasmine,
@@ -257,6 +263,7 @@ fun ScaffoldMapScreen(
                                     cursorColor = Jasmine
                                 )
                             )
+
                             TextBottomSheet(
                                 text = "Description",
                                 fontFamily = lemonMilkMediumItalic,
@@ -264,8 +271,8 @@ fun ScaffoldMapScreen(
                                 bottomPadding = 10
                             )
                             OutlinedTextField(
-                                value = locationDescription,
-                                onValueChange = { locationDescription = it },
+                                value = locationDescription!!,
+                                onValueChange = { myViewModel.changeDescription(it) },
                                 textStyle = TextStyle(fontFamily = lemonMilkRegularItalic),
                                 colors = TextFieldDefaults.outlinedTextFieldColors(
                                     textColor = Jasmine,
@@ -299,10 +306,12 @@ fun ScaffoldMapScreen(
                                         contentDescription = "Take photo",
                                     )
                                 }
+//                                if (image != null) Image(bitmap = image!!.asImageBitmap(), contentDescription = "Image")
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Button(
                                     onClick = {
-                                        myViewModel.CreateMarker(locationName, locationDescription)
+                                        if (uri != null) myViewModel.uploadImage(uri)
+                                        //myViewModel.CreateMarker(locationName!!, locationDescription!!)
                                     },
                                     shape = RoundedCornerShape(8.dp),
                                     colors = ButtonDefaults.buttonColors(

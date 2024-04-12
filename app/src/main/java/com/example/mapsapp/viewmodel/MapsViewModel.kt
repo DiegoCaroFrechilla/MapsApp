@@ -5,11 +5,9 @@ import android.net.Uri
 import android.util.Log
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mapsapp.R
-import com.example.mapsapp.Routes
 import com.example.mapsapp.model.Repository
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
@@ -27,10 +25,16 @@ class MapsViewModel : ViewModel() {
         val latitude: Double,
         val longitude: Double,
         val description: String,
-        var image: Bitmap?
+        var image: String?
     ) {
         constructor() : this(null, "", 0.0, 0.0, "", null)
     }
+
+    private val _locationName = MutableLiveData("")
+    val locationName = _locationName
+
+    private val _locationDescription = MutableLiveData("")
+    val locationDescription = _locationDescription
 
     private val _markers = MutableLiveData<MutableList<Marker>>(mutableListOf())
     val markers = _markers
@@ -42,6 +46,18 @@ class MapsViewModel : ViewModel() {
 
     private val _markerImage = MutableLiveData<Bitmap>()
     val markerImage = _markerImage
+
+    private val _newMarker: Marker = Marker()
+    var newMarker = _newMarker
+
+    fun changeTitle(title: String){
+        _locationName.value = title
+    }
+
+    fun changeDescription(description: String){
+        _locationDescription.value = description
+    }
+
     fun showBottomSheet(latLng: LatLng) {
         _showBottom.value = true
         _geolocation.value = latLng
@@ -52,9 +68,9 @@ class MapsViewModel : ViewModel() {
     }
 
     //TODO Elegir color marcador
-    fun CreateMarker(locationName: String, locationDescription: String) {
+    fun CreateMarker(locationName: String, locationDescription: String, image: String) {
         val currentMarkers = _markers.value ?: mutableListOf()
-        val newMarker =
+        newMarker =
             geolocation.value?.let {
                 Marker(
                     markerID = null,
@@ -62,9 +78,9 @@ class MapsViewModel : ViewModel() {
                     latitude = _geolocation.value!!.latitude,
                     longitude = _geolocation.value!!.longitude,
                     description = locationDescription,
-                    image = _markerImage.value
+                    image = image
                 )
-            }
+            }!!
         if (newMarker != null) {
             currentMarkers.add(newMarker)
             Repository().addMarker(newMarker)
@@ -133,6 +149,17 @@ class MapsViewModel : ViewModel() {
         }
     }
 
+    private val _image = MutableLiveData<Bitmap?>()
+    val image = _image
+
+    private val _imageUri = MutableLiveData<Uri?>()
+    val imageUri = _imageUri
+
+    fun choosenImage(bitmap: Bitmap, uri: Uri?) {
+        image.value = bitmap
+        _imageUri.value = uri
+    }
+
     fun uploadImage(imageUri: Uri?) {
         val formatter = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.getDefault())
         val now = Date()
@@ -144,6 +171,7 @@ class MapsViewModel : ViewModel() {
                     Log.i("IMAGE UPLOAD", "Image upload successfully")
                     storage.downloadUrl.addOnSuccessListener {
                         Log.i("IMAGE", it.toString())
+                        CreateMarker(locationName.value!!, locationDescription.value!!, it.toString())
                     }
                 }
                 .addOnFailureListener {
@@ -194,9 +222,9 @@ class MapsViewModel : ViewModel() {
             }
     }
 
-/*    private fun modifyProcessing(): AuthResult? {
-//TODO Circle progress bar
-    }*/
+    /*    private fun modifyProcessing(): AuthResult? {
+    //TODO Circle progress bar
+        }*/
 
     fun logout() {
         auth.signOut()
@@ -212,3 +240,13 @@ val lemonMilkMedium = FontFamily(Font(R.font.lemon_milk_medium))
 val lemonMilkMediumItalic = FontFamily(Font(R.font.lemon_milk_medium_italic))
 val lemonMilkRegular = FontFamily(Font(R.font.lemon_milk_regular))
 val lemonMilkRegularItalic = FontFamily(Font(R.font.lemon_milk_regular_italic))
+
+/*
+* TODO
+* Hacer Log In/Out
+* Hacer Fotos
+* Modificar eliminar marcadores
+* Filtrar marcadores
+* Hacer pagina detall del marcador
+* Revisar Estilo paginas
+* */
