@@ -79,38 +79,8 @@ fun ScaffoldSavedMarkerScreen(
     myViewModel: MapsViewModel,
     state: DrawerState
 ) {
-    val sheetState = rememberModalBottomSheetState(true)
-    val scope = rememberCoroutineScope()
-    val showBottomSheet by myViewModel.showBottom.observeAsState(false)
-    var locationName by remember { mutableStateOf("") }
-    var locationDescription by remember { mutableStateOf("") }
-    val context = LocalContext.current
-    val isCameraPermissionGranted by myViewModel.cameraPermissionGranted.observeAsState(false)
-    val shouldShowPermissionRationale by myViewModel.shouldShowPermissionRationale.observeAsState(
-        false
-    )
     myViewModel.getMarkers()
     val markers by myViewModel.markers.observeAsState()
-    val showPermissionDenied by myViewModel.showPermissionDenied.observeAsState(false)
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-        onResult = { isGranted ->
-            if (isGranted) {
-                myViewModel.setCameraPermissionGranted(true)
-            } else {
-                myViewModel.setShouldShowPermissionRationale(
-                    ActivityCompat.shouldShowRequestPermissionRationale(
-                        context as Activity,
-                        Manifest.permission.CAMERA
-                    )
-                )
-                if (!shouldShowPermissionRationale) {
-                    Log.i("CameraScreen", "No podemos volver a pedir permisos")
-                    myViewModel.setShowPermissionDenied(true)
-                }
-            }
-        }
-    )
     Scaffold(
         topBar = { MyTopAppBar(myViewModel, state) }
     ) { contentPadding ->

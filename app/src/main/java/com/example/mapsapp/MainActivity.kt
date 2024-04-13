@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
                     Mydrawer(myViewModel, navigationController)
                     NavHost(
                         navController = navigationController,
-                        startDestination = Routes.MapScreen.routes
+                        startDestination = Routes.LoginScreen.routes
                     ) {
                         composable(Routes.LoginScreen.routes) {
                             LoginScreen(navigationController, myViewModel)

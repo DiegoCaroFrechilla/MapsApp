@@ -50,11 +50,11 @@ class MapsViewModel : ViewModel() {
     private val _newMarker: Marker = Marker()
     var newMarker = _newMarker
 
-    fun changeTitle(title: String){
+    fun changeTitle(title: String) {
         _locationName.value = title
     }
 
-    fun changeDescription(description: String){
+    fun changeDescription(description: String) {
         _locationDescription.value = description
     }
 
@@ -171,7 +171,11 @@ class MapsViewModel : ViewModel() {
                     Log.i("IMAGE UPLOAD", "Image upload successfully")
                     storage.downloadUrl.addOnSuccessListener {
                         Log.i("IMAGE", it.toString())
-                        CreateMarker(locationName.value!!, locationDescription.value!!, it.toString())
+                        CreateMarker(
+                            locationName.value!!,
+                            locationDescription.value!!,
+                            it.toString()
+                        )
                     }
                 }
                 .addOnFailureListener {
@@ -180,6 +184,21 @@ class MapsViewModel : ViewModel() {
         }
     }
 
+    //User
+    private val _userName = MutableLiveData("")
+    val userName = _userName
+
+    private val _password = MutableLiveData("")
+    val password = _password
+
+
+    fun changeUserName(userName: String) {
+        _userName.value = userName
+    }
+
+    fun changePassword(password: String) {
+        _password.value = password
+    }
     //Authentication
 
     private val auth = FirebaseAuth.getInstance()
@@ -240,6 +259,13 @@ val lemonMilkMedium = FontFamily(Font(R.font.lemon_milk_medium))
 val lemonMilkMediumItalic = FontFamily(Font(R.font.lemon_milk_medium_italic))
 val lemonMilkRegular = FontFamily(Font(R.font.lemon_milk_regular))
 val lemonMilkRegularItalic = FontFamily(Font(R.font.lemon_milk_regular_italic))
+
+val coolveticaCompressed = FontFamily(Font(R.font.coolvetica_compressed_hv))
+val coolveticaCondensed = FontFamily(Font(R.font.coolvetica_condensed_rg))
+val coolveticaCrammed = FontFamily(Font(R.font.coolvetica_crammed_rg))
+val coolveticaRg = FontFamily(Font(R.font.coolvetica_rg))
+val coolveticaRgIt = FontFamily(Font(R.font.coolvetica_rg_it))
+
 
 /*
 * TODO
