@@ -1,3 +1,6 @@
+package com.example.mapsapp.view
+
+import UpperText
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -7,9 +10,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,24 +22,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.mapsapp.Routes
 import com.example.mapsapp.ui.theme.CoolGray2
 import com.example.mapsapp.ui.theme.Jasmine
 import com.example.mapsapp.ui.theme.RichBlack
 import com.example.mapsapp.viewmodel.MapsViewModel
-import com.example.mapsapp.viewmodel.coolveticaRgIt
 import com.example.mapsapp.viewmodel.lemonMilkMediumItalic
 import com.example.mapsapp.viewmodel.lemonMilkRegularItalic
 
-@Composable
-fun LoginScreen(navigationController: NavHostController, myViewModel: MapsViewModel) {
+fun RegisterScreen(navigationController: NavHostController, myViewModel: MapsViewModel) {
 
 }
 
 @Composable
-fun ScaffoldLoginScreen(navigationController: NavHostController, myViewModel: MapsViewModel) {
+fun ScaffoldRegisterScreen(navigationController: NavHostController, myViewModel: MapsViewModel) {
     Scaffold { contentPadding ->
         Box(
             modifier = Modifier
@@ -56,7 +56,7 @@ fun ScaffoldLoginScreen(navigationController: NavHostController, myViewModel: Ma
                         .padding(horizontal = 30.dp),
                     verticalArrangement = Arrangement.Center,
                 ) {
-                    UpperText("LOGIN", "Please log in to continue")
+                    UpperText("Sign up", "Please sing up to continue")
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = "Email",
@@ -99,45 +99,21 @@ fun ScaffoldLoginScreen(navigationController: NavHostController, myViewModel: Ma
                     )
 
                     Button(
-                        {
-                            myViewModel.login(email, password)
-                            if (myViewModel.goToNext.value == true) {
-                                navigationController.navigate(Routes.MapScreen.routes)
-                            }
-                        }
-                    ) {
-                        Text(text = "Log In")
+                        onClick = {
+                            myViewModel.register(email!!, password!!)
+                        }) {
+                        Text(text = "Sign Up")
                     }
 
                     Text(
-                        text = "Don't have an account? Sign up",
+                        text = "You already have an account? Log in",
                         modifier = Modifier
-                            .clickable { navigationController.navigate(Routes.RegisterScreen.routes) }
+                            .clickable { navigationController.navigate(Routes.LoginScreen.routes) }
                     )
 
                 }
             }
         }
     }
-}
-
-@Composable
-fun UpperText(title: String, subtitle: String) {
-    Text(
-        text = title,
-        fontSize = 20.sp,
-        style = TextStyle(
-            fontFamily = lemonMilkMediumItalic
-        ),
-    )
-
-    Text(
-        text = subtitle,
-        fontSize = 14.sp,
-        style = TextStyle(
-            fontFamily = coolveticaRgIt
-        )
-    )
 
 }
-

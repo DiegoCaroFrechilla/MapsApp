@@ -20,6 +20,7 @@ import java.util.Locale
 class MapsViewModel : ViewModel() {
     //Marker
     data class Marker(
+        var userId: String,
         var markerID: String? = null,
         val title: String,
         val latitude: Double,
@@ -27,7 +28,7 @@ class MapsViewModel : ViewModel() {
         val description: String,
         var image: String?
     ) {
-        constructor() : this(null, "", 0.0, 0.0, "", null)
+        constructor() : this("", null, "", 0.0, 0.0, "", null)
     }
 
     private val _locationName = MutableLiveData("")
@@ -68,11 +69,12 @@ class MapsViewModel : ViewModel() {
     }
 
     //TODO Elegir color marcador
-    fun CreateMarker(locationName: String, locationDescription: String, image: String) {
+    fun CreateMarker(locationName: String, locationDescription: String, image: String?) {
         val currentMarkers = _markers.value ?: mutableListOf()
         newMarker =
             geolocation.value?.let {
                 Marker(
+                    userId.value!!,
                     markerID = null,
                     title = locationName,
                     latitude = _geolocation.value!!.latitude,
@@ -115,21 +117,22 @@ class MapsViewModel : ViewModel() {
 
     val repository = Repository()
     fun getMarkers() {
-        repository.getMarkers().addSnapshotListener { value, error ->
-            if (error != null) {
-                Log.e("Firestore error", error.message.toString())
-                return@addSnapshotListener
-            }
-            val tempList = mutableListOf<Marker>()
-            for (dc: DocumentChange in value?.documentChanges!!) {
-                if (dc.type == DocumentChange.Type.ADDED) {
-                    val newMarker = dc.document.toObject(Marker::class.java)
-                    newMarker.markerID = dc.document.id
-                    tempList.add(newMarker)
+        repository.getMarkers().whereEqualTo("uid", userId.value)
+            .addSnapshotListener { value, error ->
+                if (error != null) {
+                    Log.e("Firestore error", error.message.toString())
+                    return@addSnapshotListener
                 }
+                val tempList = mutableListOf<Marker>()
+                for (dc: DocumentChange in value?.documentChanges!!) {
+                    if (dc.type == DocumentChange.Type.ADDED) {
+                        val newMarker = dc.document.toObject(Marker::class.java)
+                        newMarker.markerID = dc.document.id
+                        tempList.add(newMarker)
+                    }
+                }
+                _markers.value = tempList
             }
-            _markers.value = tempList
-        }
     }
 
     fun getMarker(markerID: String) {
@@ -185,15 +188,15 @@ class MapsViewModel : ViewModel() {
     }
 
     //User
-    private val _userName = MutableLiveData("")
-    val userName = _userName
+    private val _email = MutableLiveData("")
+    val email = _email
 
     private val _password = MutableLiveData("")
     val password = _password
 
 
-    fun changeUserName(userName: String) {
-        _userName.value = userName
+    fun changeEmail(email: String) {
+        _email.value = email
     }
 
     fun changePassword(password: String) {

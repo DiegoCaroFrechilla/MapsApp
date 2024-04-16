@@ -156,9 +156,18 @@ fun Mydrawer(myViewModel: MapsViewModel, navigationController: NavHostController
         }
     ) {
         when (currentRoute) {
-            Routes.LoginScreen.routes -> ScaffoldLoginScreen(navigationController,myViewModel)
+            Routes.LoginScreen.routes -> ScaffoldLoginScreen(navigationController, myViewModel)
+            Routes.RegisterScreen.routes -> ScaffoldRegisterScreen(
+                navigationController,
+                myViewModel
+            )
+
             Routes.MapScreen.routes -> ScaffoldMapScreen(navigationController, myViewModel, state)
-            Routes.SavedMarkersScreen.routes -> ScaffoldSavedMarkerScreen(navigationController, myViewModel, state)
+            Routes.SavedMarkersScreen.routes -> ScaffoldSavedMarkerScreen(
+                navigationController,
+                myViewModel,
+                state
+            )
         }
     }
 }
@@ -318,8 +327,15 @@ fun ScaffoldMapScreen(
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Button(
                                     onClick = {
-                                        if (uri != null) myViewModel.uploadImage(uri)
-                                        //myViewModel.CreateMarker(locationName!!, locationDescription!!)
+                                        if (uri != null) {
+                                            myViewModel.uploadImage(uri)
+                                        } else {
+                                            myViewModel.CreateMarker(
+                                                locationName!!,
+                                                locationDescription!!,
+                                                null
+                                            )
+                                        }
                                     },
                                     shape = RoundedCornerShape(8.dp),
                                     colors = ButtonDefaults.buttonColors(

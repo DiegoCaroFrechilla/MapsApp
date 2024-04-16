@@ -7,4 +7,5 @@ sealed class Routes(val routes: String) {
     object TakePhotoScreen : Routes("takePhotoScreen")
     object GalleryScreen : Routes("galleryScreen")
     object SavedMarkersScreen : Routes("savedMarkersScreen")
+    object RegisterScreen : Routes("registerScreen")
 }

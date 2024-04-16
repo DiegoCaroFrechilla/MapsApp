@@ -12,6 +12,7 @@ class Repository {
         database.collection("markers")
             .add(
                 hashMapOf(
+                    "user ID" to marker.userId,
                     "title" to marker.title,
                     "latitude" to marker.latitude,
                     "longitude" to marker.longitude,
@@ -33,7 +34,7 @@ class Repository {
         )
     }
 
-    fun deleteMarker(markerID: String){
+    fun deleteMarker(markerID: String) {
         database.collection("markers").document(markerID).delete()
     }
 
@@ -41,7 +42,7 @@ class Repository {
         return database.collection("markers")
     }
 
-    fun getMarker(markerID: String): DocumentReference{
+    fun getMarker(markerID: String): DocumentReference {
         return database.collection("markers").document(markerID)
     }
 }

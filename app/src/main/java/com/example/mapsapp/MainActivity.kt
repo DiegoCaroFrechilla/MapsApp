@@ -18,6 +18,7 @@ import com.example.mapsapp.ui.theme.MapsAppTheme
 import com.example.mapsapp.view.GalleryScreen
 import com.example.mapsapp.view.MapScreen
 import com.example.mapsapp.view.Mydrawer
+import com.example.mapsapp.view.RegisterScreen
 import com.example.mapsapp.view.SavedMarkersScreen
 import com.example.mapsapp.view.TakePhotoScreen
 import com.example.mapsapp.viewmodel.MapsViewModel
@@ -63,6 +64,12 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(Routes.SavedMarkersScreen.routes) {
                             SavedMarkersScreen(
+                                navigationController,
+                                myViewModel
+                            )
+                        }
+                        composable(Routes.RegisterScreen.routes){
+                            RegisterScreen(
                                 navigationController,
                                 myViewModel
                             )
