@@ -90,8 +90,10 @@ dependencies {
     implementation("com.google.accompanist:accompanist-permissions:0.28.0")
     implementation(platform("com.google.firebase:firebase-bom:32.8.0")) //FIREBASE
     implementation("com.google.firebase:firebase-firestore-ktx") //FIRESTORE
-    implementation ("com.google.firebase:firebase-storage-ktx")
+    implementation("com.google.firebase:firebase-storage-ktx")
     implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
-    implementation ("com.firebaseui:firebase-ui-auth:7.2.0") //AUTHENTICATION FIREBASE
+    implementation("com.firebaseui:firebase-ui-auth:7.2.0") //AUTHENTICATION FIREBASE
+    implementation("androidx.datastore:datastore-preferences:1.0.0") //DATASTORE
+
 
 }

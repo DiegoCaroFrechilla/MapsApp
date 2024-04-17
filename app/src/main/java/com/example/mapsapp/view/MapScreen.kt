@@ -8,6 +8,7 @@ import android.location.Location
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,8 +24,10 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.rounded.Logout
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -44,6 +47,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -54,6 +58,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.navigation.NavHostController
@@ -62,6 +67,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.example.mapsapp.MainActivity
 import com.example.mapsapp.Routes
 import com.example.mapsapp.model.DrawerItems
+import com.example.mapsapp.model.UserPrefs
 import com.example.mapsapp.ui.theme.CoolGray2
 import com.example.mapsapp.ui.theme.Gunmetal
 import com.example.mapsapp.ui.theme.Jasmine
@@ -79,6 +85,8 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
@@ -96,6 +104,9 @@ fun Mydrawer(myViewModel: MapsViewModel, navigationController: NavHostController
     )
     val navBackStackEntry by navigationController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+    val context = LocalContext.current
+    val userPrefs = UserPrefs(context)
+    val storedUserData = userPrefs.getUserData.collectAsState(initial = emptyList())
     ModalNavigationDrawer(
         drawerState = state,
         gesturesEnabled = false,
@@ -150,6 +161,40 @@ fun Mydrawer(myViewModel: MapsViewModel, navigationController: NavHostController
                                 navigationController.navigate(item.route)
                             }
                         }
+                    )
+                }
+                Spacer(modifier = Modifier.weight(1F))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Logout,
+                        contentDescription = "LogOut",
+                        modifier = Modifier.padding(
+                            bottom = 30.dp,
+                            end = 10.dp,
+                        ),
+                    )
+                    Text(
+                        text = "Log out",
+                        Modifier
+                            .clickable {
+                                myViewModel.logout()
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    userPrefs.saveUserData(
+                                        storedUserData.value[0],
+                                        storedUserData.value[1],
+                                        "false"
+                                    )
+                                }
+                                navigationController.navigate(Routes.LoginScreen.routes)
+                            }
+                            .padding(bottom = 20.dp),
+                        style = TextStyle(
+                            fontFamily = lemonMilkBoldItalic
+                        )
                     )
                 }
             }

@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mapsapp.R
 import com.example.mapsapp.model.Repository
+import com.example.mapsapp.model.UserPrefs
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
@@ -187,21 +188,8 @@ class MapsViewModel : ViewModel() {
         }
     }
 
-    //User
-    private val _email = MutableLiveData("")
-    val email = _email
-
-    private val _password = MutableLiveData("")
-    val password = _password
 
 
-    fun changeEmail(email: String) {
-        _email.value = email
-    }
-
-    fun changePassword(password: String) {
-        _password.value = password
-    }
     //Authentication
 
     private val auth = FirebaseAuth.getInstance()
@@ -250,6 +238,7 @@ class MapsViewModel : ViewModel() {
 
     fun logout() {
         auth.signOut()
+        _goToNext.value = false
     }
 }
 
@@ -278,4 +267,6 @@ val coolveticaRgIt = FontFamily(Font(R.font.coolvetica_rg_it))
 * Filtrar marcadores
 * Hacer pagina detall del marcador
 * Revisar Estilo paginas
+* Control de errores registrar usuarios (usuario sin arroba)
+* Control de errores log in (contraseña mal) (usuario no existente)
 * */

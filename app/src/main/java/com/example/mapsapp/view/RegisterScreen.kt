@@ -18,6 +18,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -44,8 +47,8 @@ fun ScaffoldRegisterScreen(navigationController: NavHostController, myViewModel:
                 .background(RichBlack)
 
         ) {
-            val email by myViewModel.email.observeAsState()
-            val password by myViewModel.password.observeAsState()
+            var email by rememberSaveable { mutableStateOf("") }
+            var password by rememberSaveable { mutableStateOf("") }
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -67,8 +70,8 @@ fun ScaffoldRegisterScreen(navigationController: NavHostController, myViewModel:
                         ),
                     )
                     OutlinedTextField(
-                        value = email!!,
-                        onValueChange = { myViewModel.changeEmail(it) },
+                        value = email,
+                        onValueChange = { email = it },
                         textStyle = TextStyle(fontFamily = lemonMilkRegularItalic),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             textColor = Jasmine,
@@ -86,8 +89,8 @@ fun ScaffoldRegisterScreen(navigationController: NavHostController, myViewModel:
                         ),
                     )
                     OutlinedTextField(
-                        value = password!!,
-                        onValueChange = { myViewModel.changePassword(it) },
+                        value = password,
+                        onValueChange = { password = it },
                         visualTransformation = PasswordVisualTransformation(),
                         textStyle = TextStyle(fontFamily = lemonMilkRegularItalic),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -100,7 +103,7 @@ fun ScaffoldRegisterScreen(navigationController: NavHostController, myViewModel:
 
                     Button(
                         onClick = {
-                            myViewModel.register(email!!, password!!)
+                            myViewModel.register(email, password)
                         }) {
                         Text(text = "Sign Up")
                     }
