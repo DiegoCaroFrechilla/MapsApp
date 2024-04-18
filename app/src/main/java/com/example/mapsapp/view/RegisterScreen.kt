@@ -22,8 +22,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.mapsapp.Routes
@@ -31,6 +35,7 @@ import com.example.mapsapp.ui.theme.CoolGray2
 import com.example.mapsapp.ui.theme.Jasmine
 import com.example.mapsapp.ui.theme.RichBlack
 import com.example.mapsapp.viewmodel.MapsViewModel
+import com.example.mapsapp.viewmodel.coolveticaRgIt
 import com.example.mapsapp.viewmodel.lemonMilkMediumItalic
 import com.example.mapsapp.viewmodel.lemonMilkRegularItalic
 
@@ -100,23 +105,32 @@ fun ScaffoldRegisterScreen(navigationController: NavHostController, myViewModel:
                             cursorColor = Jasmine
                         )
                     )
-
                     Button(
                         onClick = {
-                            myViewModel.register(email, password)
+                            myViewModel.register(email, password    )
                         }) {
                         Text(text = "Sign Up")
                     }
-
                     Text(
-                        text = "You already have an account? Log in",
+                        buildAnnotatedString {
+                            withStyle(style = SpanStyle(fontFamily = coolveticaRgIt)) {
+                                append("Have an account? ")
+                            }
+                            withStyle(
+                                style = SpanStyle(
+                                    color = Jasmine,
+                                    fontFamily = coolveticaRgIt,
+                                    fontWeight = FontWeight.Black
+                                )
+                            ) {
+                                append("Log In")
+                            }
+                        },
                         modifier = Modifier
-                            .clickable { navigationController.navigate(Routes.LoginScreen.routes) }
+                            .clickable {  navigationController.navigate(Routes.RegisterScreen.routes)}
                     )
-
                 }
             }
         }
     }
-
 }

@@ -1,7 +1,5 @@
 package com.example.mapsapp.view
 
-import android.Manifest
-import android.app.Activity
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -48,9 +46,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
@@ -58,8 +60,10 @@ import androidx.navigation.NavHostController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.mapsapp.R
+import com.example.mapsapp.Routes
 import com.example.mapsapp.ui.theme.Jasmine
 import com.example.mapsapp.viewmodel.MapsViewModel
+import com.example.mapsapp.viewmodel.coolveticaRgIt
 import com.example.mapsapp.viewmodel.lemonMilkMedium
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
