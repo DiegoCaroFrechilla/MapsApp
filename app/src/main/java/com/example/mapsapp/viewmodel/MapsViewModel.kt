@@ -8,6 +8,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mapsapp.R
+import com.example.mapsapp.model.MarkersCategories
 import com.example.mapsapp.model.Repository
 //import com.example.mapsapp.model.UserPrefs
 import com.google.android.gms.maps.model.LatLng
@@ -42,9 +43,6 @@ class MapsViewModel : ViewModel() {
     private val _category = MutableLiveData("")
     val category = _category
 
-    private val _selected = MutableLiveData(false)
-    val selected = _selected
-
     private val _markers = MutableLiveData<MutableList<Marker>>(mutableListOf())
     val markers = _markers
 
@@ -60,6 +58,16 @@ class MapsViewModel : ViewModel() {
     private val _newMarker: Marker = Marker()
     var newMarker = _newMarker
 
+    private val _categories = MutableLiveData(
+        listOf(
+            MarkersCategories.Home,
+            MarkersCategories.Shopping,
+            MarkersCategories.Restaurants,
+            MarkersCategories.Supermarkets,
+        )
+    )
+
+    val categories = _categories
     fun changeTitle(title: String) {
         _locationName.value = title
     }
@@ -72,10 +80,6 @@ class MapsViewModel : ViewModel() {
         _category.value = category
     }
 
-    fun changeState(state: Boolean) {
-        _selected.value = selected.value != true
-    }
-
     fun showBottomSheet(latLng: LatLng) {
         _showBottom.value = true
         _geolocation.value = latLng
@@ -85,8 +89,12 @@ class MapsViewModel : ViewModel() {
         _showBottom.value = false
     }
 
-    //TODO Elegir color marcador
-    fun CreateMarker(locationName: String, locationDescription: String, image: String?, category: String?) {
+    fun CreateMarker(
+        locationName: String,
+        locationDescription: String,
+        image: String?,
+        category: String?
+    ) {
         val currentMarkers = _markers.value ?: mutableListOf()
         newMarker =
             geolocation.value?.let {

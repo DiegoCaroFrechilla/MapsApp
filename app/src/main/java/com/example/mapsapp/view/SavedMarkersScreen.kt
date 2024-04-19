@@ -1,74 +1,47 @@
 package com.example.mapsapp.view
 
-import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.AbsoluteCutCornerShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.core.app.ActivityCompat
 import androidx.navigation.NavHostController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.mapsapp.R
-import com.example.mapsapp.Routes
+import com.example.mapsapp.model.MarkersCategories
 import com.example.mapsapp.ui.theme.CoolGray2
 import com.example.mapsapp.ui.theme.Jasmine
 import com.example.mapsapp.ui.theme.PrussianBlue
 import com.example.mapsapp.viewmodel.MapsViewModel
-import com.example.mapsapp.viewmodel.coolveticaRgIt
-import com.example.mapsapp.viewmodel.lemonMilkMedium
 import com.example.mapsapp.viewmodel.lemonMilkRegularItalic
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
@@ -90,6 +63,7 @@ fun ScaffoldSavedMarkerScreen(
 ) {
     myViewModel.getMarkers()
     val markers by myViewModel.markers.observeAsState()
+    val categories by myViewModel.categories.observeAsState()
     Scaffold(
         topBar = { MyTopAppBar(myViewModel, state) }
     ) { contentPadding ->
@@ -104,7 +78,7 @@ fun ScaffoldSavedMarkerScreen(
             ) {
                 markers?.let {
                     items(it.toList()) {
-                        MarkerList(marker = it)
+                        MarkerList(marker = it, categories)
                     }
                 }
             }
@@ -115,7 +89,7 @@ fun ScaffoldSavedMarkerScreen(
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun MarkerList(marker: MapsViewModel.Marker) {
+fun MarkerList(marker: MapsViewModel.Marker, categories: List<MarkersCategories>?) {
     Card(
         border = BorderStroke(2.dp, Jasmine),
         shape = AbsoluteCutCornerShape(10.dp),
@@ -142,7 +116,13 @@ fun MarkerList(marker: MapsViewModel.Marker) {
                 )
             } else {
                 Image(
-                    painter = painterResource(id = R.drawable.locationlogo),
+                    painter = when (marker.category) {
+                        categories?.get(0)?.name -> painterResource(id = R.drawable.locationlogopink)
+                        categories?.get(1)?.name -> painterResource(id = R.drawable.locationlogoblue)
+                        categories?.get(2)?.name -> painterResource(id = R.drawable.locationlogogreen)
+                        categories?.get(3)?.name -> painterResource(id = R.drawable.locationlogo)
+                        else -> painterResource(id = R.drawable.locationlogored)
+                    },
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -171,3 +151,5 @@ fun MarkerList(marker: MapsViewModel.Marker) {
         }
     }
 }
+
+

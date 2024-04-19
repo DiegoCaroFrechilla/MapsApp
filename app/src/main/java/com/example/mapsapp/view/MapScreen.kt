@@ -4,6 +4,9 @@ import ScaffoldLoginScreen
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.location.Location
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -62,6 +65,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -74,7 +78,6 @@ import com.example.mapsapp.model.UserPrefs
 import com.example.mapsapp.ui.theme.CoolGray2
 import com.example.mapsapp.ui.theme.Gunmetal
 import com.example.mapsapp.ui.theme.Jasmine
-import com.example.mapsapp.ui.theme.PrussianBlue
 import com.example.mapsapp.viewmodel.MapsViewModel
 import com.example.mapsapp.viewmodel.lemonMilkBoldItalic
 import com.example.mapsapp.viewmodel.lemonMilkMediumItalic
@@ -88,6 +91,9 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
+import com.example.mapsapp.R
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.maps.android.compose.MarkerInfoWindowContent
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.CoroutineScope
@@ -302,19 +308,14 @@ fun ScaffoldMapScreen(
     ) { contentPadding ->
         Box(modifier = Modifier.padding(contentPadding))
         {
-            val categories = listOf(
-                MarkersCategories.Home,
-                MarkersCategories.Shopping,
-                MarkersCategories.Restaurants,
-                MarkersCategories.Supermarkets,
-            )
+            val categories by myViewModel.categories.observeAsState()
             val permissionState =
                 rememberPermissionState(permission = Manifest.permission.ACCESS_FINE_LOCATION)
             LaunchedEffect(Unit) {
                 permissionState.launchPermissionRequest()
             }
             if (permissionState.status.isGranted) {
-                Map(myViewModel)
+                Map(myViewModel, categories!!)
                 myViewModel.getMarkers()
                 if (showBottomSheet) {
                     ModalBottomSheet(
@@ -367,14 +368,17 @@ fun ScaffoldMapScreen(
                                     .fillMaxWidth()
                                     .horizontalScroll(rememberScrollState())
                             ) {
-                                categories.forEach { item ->
+                                categories!!.forEach { item ->
                                     Button(
-                                        onClick = { myViewModel.changeCategory(item.name) },
+                                        onClick = {
+                                            myViewModel.changeCategory(item.name)
+                                        },
+                                        enabled = category != item.name,
                                         shape = RoundedCornerShape(8.dp),
                                         border = BorderStroke(2.dp, CoolGray2),
                                         colors = ButtonDefaults.buttonColors(
                                             containerColor = Gunmetal,
-                                            contentColor = Jasmine,
+                                            contentColor = item.color,
                                         ),
                                         modifier = Modifier
                                             .padding(end = 10.dp, top = 10.dp)
@@ -467,7 +471,7 @@ fun TextBottomSheet(text: String, fontFamily: FontFamily, topPadding: Int, botto
 
 @SuppressLint("MissingPermission")
 @Composable
-fun Map(myViewModel: MapsViewModel) {
+fun Map(myViewModel: MapsViewModel, categories: List<MarkersCategories>) {
     val context = LocalContext.current
     val fusedLocationProviderClient =
         remember { LocationServices.getFusedLocationProviderClient(context) }
@@ -512,21 +516,31 @@ fun Map(myViewModel: MapsViewModel) {
             )
             val markers by myViewModel.markers.observeAsState()
             markers?.forEach {
+
                 Marker(
                     state = MarkerState(LatLng(it.latitude, it.longitude)),
                     title = it.title,
                     snippet = it.description,
-                    icon = when(it.category){
-                        "Home" -> BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)
-                        "Shopping" -> BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
-                        "Restaurants" -> BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
-                        "Supermarkets" -> BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)
-                        else -> BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
-                    }
+                    icon = when (it.category) {
+                        categories[0].name -> bitmapDescriptorFromVector(context, R.drawable.locationlogopink)
+                        categories[1].name -> bitmapDescriptorFromVector(context, R.drawable.locationlogoblue)
+                        categories[2].name -> bitmapDescriptorFromVector(context, R.drawable.locationlogogreen)
+                        categories[3].name -> bitmapDescriptorFromVector(context, R.drawable.locationlogo)
+                        else -> bitmapDescriptorFromVector(context, R.drawable.locationlogored)
+                    },
                 )
             }
         }
     }
 }
-
+//https://stackoverflow.com/questions/42365658/custom-marker-in-google-maps-in-android-with-vector-asset-icon
+private fun bitmapDescriptorFromVector(context: Context, vectorResId: Int): BitmapDescriptor? {
+    val measurament = 150
+    return ContextCompat.getDrawable(context, vectorResId)?.run {
+        setBounds(0, 0, measurament, measurament)
+        val bitmap = Bitmap.createBitmap(measurament, measurament, Bitmap.Config.ARGB_8888)
+        draw(Canvas(bitmap))
+        BitmapDescriptorFactory.fromBitmap(bitmap)
+    }
+}
 
