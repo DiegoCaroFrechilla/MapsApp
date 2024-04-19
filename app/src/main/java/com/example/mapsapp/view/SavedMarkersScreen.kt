@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -61,10 +63,13 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.mapsapp.R
 import com.example.mapsapp.Routes
+import com.example.mapsapp.ui.theme.CoolGray2
 import com.example.mapsapp.ui.theme.Jasmine
+import com.example.mapsapp.ui.theme.PrussianBlue
 import com.example.mapsapp.viewmodel.MapsViewModel
 import com.example.mapsapp.viewmodel.coolveticaRgIt
 import com.example.mapsapp.viewmodel.lemonMilkMedium
+import com.example.mapsapp.viewmodel.lemonMilkRegularItalic
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -115,14 +120,12 @@ fun MarkerList(marker: MapsViewModel.Marker) {
         border = BorderStroke(2.dp, Jasmine),
         shape = AbsoluteCutCornerShape(10.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.background,
+            containerColor = PrussianBlue,
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer
         ),
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-        /**/
-
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -134,26 +137,35 @@ fun MarkerList(marker: MapsViewModel.Marker) {
                     contentDescription = "Marker Image",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .fillMaxSize()
+                        .height(150.dp)
+                        .aspectRatio(1F)
                 )
             } else {
                 Image(
                     painter = painterResource(id = R.drawable.locationlogo),
-                    contentDescription = null
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .height(150.dp)
+                        .aspectRatio(1F)
                 )
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column {
-                Row {
-                    Text(
-                        text = marker.title
+                Text(
+                    text = marker.title,
+                    style = TextStyle(
+                        fontFamily = lemonMilkRegularItalic,
+                        color = Jasmine
                     )
-                }
-                Row {
-                    Text(
-                        text = marker.description
+                )
+                Text(
+                    text = marker.description,
+                    style = TextStyle(
+                        fontFamily = lemonMilkRegularItalic,
+                        color = CoolGray2
                     )
-                }
+                )
             }
 
         }

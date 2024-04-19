@@ -9,7 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mapsapp.R
 import com.example.mapsapp.model.Repository
-import com.example.mapsapp.model.UserPrefs
+//import com.example.mapsapp.model.UserPrefs
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
@@ -27,9 +27,10 @@ class MapsViewModel : ViewModel() {
         val latitude: Double,
         val longitude: Double,
         val description: String,
-        var image: String?
+        var image: String?,
+        var category: String?
     ) {
-        constructor() : this("", null, "", 0.0, 0.0, "", null)
+        constructor() : this("", null, "", 0.0, 0.0, "", null, null)
     }
 
     private val _locationName = MutableLiveData("")
@@ -38,8 +39,15 @@ class MapsViewModel : ViewModel() {
     private val _locationDescription = MutableLiveData("")
     val locationDescription = _locationDescription
 
+    private val _category = MutableLiveData("")
+    val category = _category
+
+    private val _selected = MutableLiveData(false)
+    val selected = _selected
+
     private val _markers = MutableLiveData<MutableList<Marker>>(mutableListOf())
     val markers = _markers
+
     private val _showBottom = MutableLiveData(false)
     val showBottom = _showBottom
 
@@ -60,6 +68,14 @@ class MapsViewModel : ViewModel() {
         _locationDescription.value = description
     }
 
+    fun changeCategory(category: String) {
+        _category.value = category
+    }
+
+    fun changeState(state: Boolean) {
+        _selected.value = selected.value != true
+    }
+
     fun showBottomSheet(latLng: LatLng) {
         _showBottom.value = true
         _geolocation.value = latLng
@@ -70,7 +86,7 @@ class MapsViewModel : ViewModel() {
     }
 
     //TODO Elegir color marcador
-    fun CreateMarker(locationName: String, locationDescription: String, image: String?) {
+    fun CreateMarker(locationName: String, locationDescription: String, image: String?, category: String?) {
         val currentMarkers = _markers.value ?: mutableListOf()
         newMarker =
             geolocation.value?.let {
@@ -81,7 +97,8 @@ class MapsViewModel : ViewModel() {
                     latitude = _geolocation.value!!.latitude,
                     longitude = _geolocation.value!!.longitude,
                     description = locationDescription,
-                    image = image
+                    image = image,
+                    category = category
                 )
             }!!
         if (newMarker != null) {
@@ -89,6 +106,7 @@ class MapsViewModel : ViewModel() {
             Repository().addMarker(newMarker)
         }
         _markers.value = currentMarkers
+        getMarkers()
         hideBottomSheet()
     }
 
@@ -117,8 +135,9 @@ class MapsViewModel : ViewModel() {
     //FIRESTORE
 
     val repository = Repository()
+
     fun getMarkers() {
-        repository.getMarkers().whereEqualTo("uid", userId.value)
+        repository.getMarkers().whereEqualTo("user ID", userId.value)
             .addSnapshotListener { value, error ->
                 if (error != null) {
                     Log.e("Firestore error", error.message.toString())
@@ -135,6 +154,7 @@ class MapsViewModel : ViewModel() {
                 _markers.value = tempList
             }
     }
+
 
     fun getMarker(markerID: String) {
         repository.getMarker(markerID).addSnapshotListener { value, error ->
@@ -178,7 +198,9 @@ class MapsViewModel : ViewModel() {
                         CreateMarker(
                             locationName.value!!,
                             locationDescription.value!!,
-                            it.toString()
+                            it.toString(),
+                            category.value
+
                         )
                     }
                 }
@@ -187,7 +209,6 @@ class MapsViewModel : ViewModel() {
                 }
         }
     }
-
 
 
     //Authentication
@@ -267,6 +288,6 @@ val coolveticaRgIt = FontFamily(Font(R.font.coolvetica_rg_it))
 * Filtrar marcadores
 * Hacer pagina detall del marcador
 * Revisar Estilo paginas
-* Control de errores registrar usuarios (usuario sin arroba)
+* 6
 * Control de errores log in (contraseña mal) (usuario no existente)
 * */

@@ -15,6 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.mapsapp.ui.theme.MapsAppTheme
+import com.example.mapsapp.view.DetailScreen
 import com.example.mapsapp.view.GalleryScreen
 import com.example.mapsapp.view.MapScreen
 import com.example.mapsapp.view.Mydrawer
@@ -70,6 +71,12 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(Routes.RegisterScreen.routes){
                             RegisterScreen(
+                                navigationController,
+                                myViewModel
+                            )
+                        }
+                        composable(Routes.DetailScreen.routes){
+                            DetailScreen(
                                 navigationController,
                                 myViewModel
                             )

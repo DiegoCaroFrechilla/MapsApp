@@ -8,7 +8,9 @@ import android.location.Location
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,13 +20,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.rounded.Logout
@@ -56,13 +58,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.navigation.NavHostController
@@ -71,12 +68,14 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.example.mapsapp.MainActivity
 import com.example.mapsapp.Routes
 import com.example.mapsapp.model.DrawerItems
+import com.example.mapsapp.model.MarkersCategories
 import com.example.mapsapp.model.UserPrefs
+//import com.example.mapsapp.model.UserPrefs
 import com.example.mapsapp.ui.theme.CoolGray2
 import com.example.mapsapp.ui.theme.Gunmetal
 import com.example.mapsapp.ui.theme.Jasmine
+import com.example.mapsapp.ui.theme.PrussianBlue
 import com.example.mapsapp.viewmodel.MapsViewModel
-import com.example.mapsapp.viewmodel.coolveticaRgIt
 import com.example.mapsapp.viewmodel.lemonMilkBoldItalic
 import com.example.mapsapp.viewmodel.lemonMilkMediumItalic
 import com.example.mapsapp.viewmodel.lemonMilkRegularItalic
@@ -84,6 +83,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -107,6 +107,7 @@ fun Mydrawer(myViewModel: MapsViewModel, navigationController: NavHostController
         DrawerItems.Map,
         DrawerItems.SavedMarkers
     )
+
     val navBackStackEntry by navigationController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val context = LocalContext.current
@@ -218,6 +219,12 @@ fun Mydrawer(myViewModel: MapsViewModel, navigationController: NavHostController
                 myViewModel,
                 state
             )
+
+            Routes.DetailScreen.routes -> ScaffoldDetailScreen(
+                navigationController,
+                myViewModel,
+                state
+            )
         }
     }
 }
@@ -262,6 +269,7 @@ fun ScaffoldMapScreen(
     val showBottomSheet by myViewModel.showBottom.observeAsState(false)
     val locationName by myViewModel.locationName.observeAsState()
     val locationDescription by myViewModel.locationDescription.observeAsState()
+    val category by myViewModel.category.observeAsState()
     val context = LocalContext.current
     val isCameraPermissionGranted by myViewModel.cameraPermissionGranted.observeAsState(false)
     val shouldShowPermissionRationale by myViewModel.shouldShowPermissionRationale.observeAsState(
@@ -294,6 +302,12 @@ fun ScaffoldMapScreen(
     ) { contentPadding ->
         Box(modifier = Modifier.padding(contentPadding))
         {
+            val categories = listOf(
+                MarkersCategories.Home,
+                MarkersCategories.Shopping,
+                MarkersCategories.Restaurants,
+                MarkersCategories.Supermarkets,
+            )
             val permissionState =
                 rememberPermissionState(permission = Manifest.permission.ACCESS_FINE_LOCATION)
             LaunchedEffect(Unit) {
@@ -317,7 +331,7 @@ fun ScaffoldMapScreen(
                                 text = "Name",
                                 lemonMilkMediumItalic,
                                 topPadding = 0,
-                                bottomPadding = 10,
+                                bottomPadding = 5,
                             )
                             OutlinedTextField(
                                 value = locationName!!,
@@ -335,7 +349,7 @@ fun ScaffoldMapScreen(
                                 text = "Description",
                                 fontFamily = lemonMilkMediumItalic,
                                 topPadding = 10,
-                                bottomPadding = 10
+                                bottomPadding = 5
                             )
                             OutlinedTextField(
                                 value = locationDescription!!,
@@ -348,6 +362,31 @@ fun ScaffoldMapScreen(
                                     cursorColor = Jasmine
                                 )
                             )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .horizontalScroll(rememberScrollState())
+                            ) {
+                                categories.forEach { item ->
+                                    Button(
+                                        onClick = { myViewModel.changeCategory(item.name) },
+                                        shape = RoundedCornerShape(8.dp),
+                                        border = BorderStroke(2.dp, CoolGray2),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = Gunmetal,
+                                            contentColor = Jasmine,
+                                        ),
+                                        modifier = Modifier
+                                            .padding(end = 10.dp, top = 10.dp)
+                                    ) {
+                                        Text(
+                                            text = item.name,
+                                            style = TextStyle(fontFamily = lemonMilkMediumItalic)
+                                        )
+
+                                    }
+                                }
+                            }
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -383,7 +422,8 @@ fun ScaffoldMapScreen(
                                             myViewModel.CreateMarker(
                                                 locationName!!,
                                                 locationDescription!!,
-                                                null
+                                                null,
+                                                category
                                             )
                                         }
                                         myViewModel.getMarkers()
@@ -468,6 +508,7 @@ fun Map(myViewModel: MapsViewModel) {
                 state = MarkerState(position = itb),
                 title = "ITB",
                 snippet = "Marker at ITB",
+                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
             )
             val markers by myViewModel.markers.observeAsState()
             markers?.forEach {
@@ -475,8 +516,17 @@ fun Map(myViewModel: MapsViewModel) {
                     state = MarkerState(LatLng(it.latitude, it.longitude)),
                     title = it.title,
                     snippet = it.description,
+                    icon = when(it.category){
+                        "Home" -> BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)
+                        "Shopping" -> BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
+                        "Restaurants" -> BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
+                        "Supermarkets" -> BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)
+                        else -> BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
+                    }
                 )
             }
         }
     }
 }
+
+

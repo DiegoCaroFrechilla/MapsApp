@@ -17,7 +17,8 @@ class Repository {
                     "latitude" to marker.latitude,
                     "longitude" to marker.longitude,
                     "description" to marker.description,
-                    "image" to marker.image
+                    "image" to marker.image,
+                    "category" to marker.category
                 )
             )
     }
@@ -29,7 +30,8 @@ class Repository {
                 "latitude" to editedMarker.latitude,
                 "longitude" to editedMarker.longitude,
                 "description" to editedMarker.description,
-                "image" to editedMarker.image
+                "image" to editedMarker.image,
+                "category" to editedMarker.category
             )
         )
     }
