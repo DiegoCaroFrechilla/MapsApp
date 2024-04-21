@@ -512,7 +512,7 @@ fun Map(myViewModel: MapsViewModel, categories: List<MarkersCategories>) {
                 state = MarkerState(position = itb),
                 title = "ITB",
                 snippet = "Marker at ITB",
-                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
+                icon = bitmapDescriptorFromVector(context, R.drawable.locationlogored)
             )
             val markers by myViewModel.markers.observeAsState()
             markers?.forEach {

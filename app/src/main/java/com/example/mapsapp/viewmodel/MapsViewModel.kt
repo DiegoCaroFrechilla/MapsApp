@@ -61,7 +61,7 @@ class MapsViewModel : ViewModel() {
     private val _categories = MutableLiveData(
         listOf(
             MarkersCategories.Home,
-            MarkersCategories.Shopping,
+            MarkersCategories.Shop,
             MarkersCategories.Restaurants,
             MarkersCategories.Supermarkets,
         )
@@ -290,7 +290,7 @@ val coolveticaRgIt = FontFamily(Font(R.font.coolvetica_rg_it))
 
 /*
 * TODO
-* Hacer Log In/Out
+* Hacer Log In/Out ✅
 * Hacer Fotos
 * Modificar eliminar marcadores
 * Filtrar marcadores
