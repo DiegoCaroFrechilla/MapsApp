@@ -46,6 +46,9 @@ class MapsViewModel : ViewModel() {
     private val _markers = MutableLiveData<MutableList<Marker>>(mutableListOf())
     val markers = _markers
 
+    private val _marker = MutableLiveData<Marker>()
+    val marker = _marker
+
     private val _showBottom = MutableLiveData(false)
     val showBottom = _showBottom
 
@@ -57,6 +60,13 @@ class MapsViewModel : ViewModel() {
 
     private val _newMarker: Marker = Marker()
     var newMarker = _newMarker
+
+    private val _markerIDSelected = MutableLiveData<Marker>()
+    val markerIDSelected = _markerIDSelected
+
+    fun selectMarker(markerID: Marker) {
+        _markerIDSelected.value = markerID
+    }
 
     private val _categories = MutableLiveData(
         listOf(
@@ -170,11 +180,14 @@ class MapsViewModel : ViewModel() {
                 Log.w("UserRepository", "Listen failed", error)
                 return@addSnapshotListener
             }
+            var tempMarker = Marker()
             if (value != null && value.exists()) {
-                val marker = value.toObject(Marker::class.java)
-                if (marker != null) {
-                    marker.markerID = markerID
+                val marker1 = value.toObject(Marker::class.java)
+                if (marker1 != null) {
+                    marker1.markerID = markerID
+                    tempMarker = marker1
                 }
+                _marker.value = tempMarker
             } else {
                 Log.d("UserRepository", "Current data: null")
             }
@@ -182,7 +195,8 @@ class MapsViewModel : ViewModel() {
     }
 
     fun getMarkersFiltered(category: String?) {
-        repository.getMarkers().whereEqualTo("user ID", userId.value).whereEqualTo("category", category)
+        repository.getMarkers().whereEqualTo("user ID", userId.value)
+            .whereEqualTo("category", category)
             .addSnapshotListener { value, error ->
                 if (error != null) {
                     Log.e("Firestore error", error.message.toString())
@@ -312,7 +326,7 @@ val coolveticaRgIt = FontFamily(Font(R.font.coolvetica_rg_it))
 * Hacer Log In/Out ✅
 * Hacer Fotos
 * Modificar eliminar marcadores
-* Filtrar marcadores
+* Filtrar marcadores ✅
 * Hacer pagina detall del marcador
 * Revisar Estilo paginas
 * 6

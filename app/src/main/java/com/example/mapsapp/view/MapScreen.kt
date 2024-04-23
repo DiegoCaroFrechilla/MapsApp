@@ -381,7 +381,9 @@ fun ScaffoldMapScreen(
                                 categories!!.forEach { item ->
                                     Button(
                                         onClick = {
-                                            myViewModel.changeCategory(item.name)
+                                            myViewModel.changeCategory(/*if (item.name == "Default") "" else*/
+                                                item.name
+                                            )
                                         },
                                         enabled = category != item.name,
                                         shape = RoundedCornerShape(8.dp),
@@ -532,10 +534,26 @@ fun Map(myViewModel: MapsViewModel, categories: List<MarkersCategories>) {
                     title = it.title,
                     snippet = it.description,
                     icon = when (it.category) {
-                        categories[0].name -> bitmapDescriptorFromVector(context, R.drawable.locationlogopink)
-                        categories[1].name -> bitmapDescriptorFromVector(context, R.drawable.locationlogoblue)
-                        categories[2].name -> bitmapDescriptorFromVector(context, R.drawable.locationlogogreen)
-                        categories[3].name -> bitmapDescriptorFromVector(context, R.drawable.locationlogo)
+                        categories[0].name -> bitmapDescriptorFromVector(
+                            context,
+                            R.drawable.locationlogopink
+                        )
+
+                        categories[1].name -> bitmapDescriptorFromVector(
+                            context,
+                            R.drawable.locationlogoblue
+                        )
+
+                        categories[2].name -> bitmapDescriptorFromVector(
+                            context,
+                            R.drawable.locationlogogreen
+                        )
+
+                        categories[3].name -> bitmapDescriptorFromVector(
+                            context,
+                            R.drawable.locationlogo
+                        )
+
                         else -> bitmapDescriptorFromVector(context, R.drawable.locationlogored)
                     },
                 )
@@ -543,6 +561,7 @@ fun Map(myViewModel: MapsViewModel, categories: List<MarkersCategories>) {
         }
     }
 }
+
 //https://stackoverflow.com/questions/42365658/custom-marker-in-google-maps-in-android-with-vector-asset-icon
 private fun bitmapDescriptorFromVector(context: Context, vectorResId: Int): BitmapDescriptor? {
     val measurament = 150

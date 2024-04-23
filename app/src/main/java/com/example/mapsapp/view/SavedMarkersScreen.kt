@@ -23,9 +23,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DirectionsSubwayFilled
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,7 +40,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -95,7 +92,7 @@ fun ScaffoldSavedMarkerScreen(
             ) {
                 markers?.let {
                     items(it.toList()) {
-                        MarkerList(marker = it, categories)
+                        MarkerList(marker = it, categories, navigationController, myViewModel)
                     }
                 }
             }
@@ -106,7 +103,12 @@ fun ScaffoldSavedMarkerScreen(
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun MarkerList(marker: MapsViewModel.Marker, categories: List<MarkersCategories>?) {
+fun MarkerList(
+    marker: MapsViewModel.Marker,
+    categories: List<MarkersCategories>?,
+    navigationController: NavHostController,
+    myViewModel: MapsViewModel
+) {
     Card(
         border = BorderStroke(2.dp, Jasmine),
         shape = AbsoluteCutCornerShape(10.dp),
@@ -116,7 +118,11 @@ fun MarkerList(marker: MapsViewModel.Marker, categories: List<MarkersCategories>
         ),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(8.dp)
+            .clickable {
+                myViewModel.selectMarker(marker)
+                navigationController.navigate(Routes.DetailScreen.routes)
+            }
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -179,7 +185,7 @@ fun Filter(
     val currentRoute = navBackStackEntry?.destination?.route
     var isDropdownExpanded by remember { mutableStateOf(false) }
     val category by myViewModel.category.observeAsState()
-    if (currentRoute == Routes.SavedMarkersScreen.routes) {
+    //if (currentRoute == Routes.SavedMarkersScreen.routes) {
         IconButton(
             onClick = {
                 isDropdownExpanded = !isDropdownExpanded
@@ -229,6 +235,6 @@ fun Filter(
 
         }
     }
-}
+//}
 
 

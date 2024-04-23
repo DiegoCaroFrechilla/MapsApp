@@ -1,5 +1,6 @@
 package com.example.mapsapp.view
 
+import PasswordVisibility
 import UpperText
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,12 +9,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,11 +32,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.mapsapp.Routes
 import com.example.mapsapp.ui.theme.CoolGray2
+import com.example.mapsapp.ui.theme.Gunmetal
 import com.example.mapsapp.ui.theme.Jasmine
 import com.example.mapsapp.ui.theme.RichBlack
 import com.example.mapsapp.viewmodel.MapsViewModel
@@ -54,6 +61,7 @@ fun ScaffoldRegisterScreen(navigationController: NavHostController, myViewModel:
         ) {
             var email by rememberSaveable { mutableStateOf("") }
             var password by rememberSaveable { mutableStateOf("") }
+            var showPassword by rememberSaveable { mutableStateOf(false) }
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -96,20 +104,40 @@ fun ScaffoldRegisterScreen(navigationController: NavHostController, myViewModel:
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
-                        visualTransformation = PasswordVisualTransformation(),
+                        visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                         textStyle = TextStyle(fontFamily = lemonMilkRegularItalic),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             textColor = Jasmine,
                             focusedBorderColor = CoolGray2,
                             unfocusedBorderColor = CoolGray2,
                             cursorColor = Jasmine
-                        )
+                        ),
+                        trailingIcon = {
+                            PasswordVisibility(
+                                showPassword = showPassword,
+                                onToggleClick = {
+                                    showPassword = !showPassword
+                                }
+                            )
+                        }
                     )
                     Button(
                         onClick = {
-                            myViewModel.register(email, password    )
-                        }) {
-                        Text(text = "Sign Up")
+                            myViewModel.register(email, password)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 10.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = Gunmetal
+                        )
+                    ) {
+                        Text(
+                            text = "Sign Up",
+                            style = TextStyle(fontFamily = lemonMilkMediumItalic)
+                        )
                     }
                     Text(
                         buildAnnotatedString {
@@ -127,7 +155,7 @@ fun ScaffoldRegisterScreen(navigationController: NavHostController, myViewModel:
                             }
                         },
                         modifier = Modifier
-                            .clickable {  navigationController.navigate(Routes.RegisterScreen.routes)}
+                            .clickable { navigationController.navigate(Routes.LoginScreen.routes) }
                     )
                 }
             }

@@ -34,6 +34,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
@@ -86,7 +87,7 @@ fun ScaffoldLoginScreen(navigationController: NavHostController, myViewModel: Ma
             val userPrefs = UserPrefs(context)
             val storedUserData = userPrefs.getUserData.collectAsState(initial = emptyList())
 
-            if (storedUserData.value.isNotEmpty() && storedUserData.value[0] != "" && storedUserData.value[1] != "" && storedUserData.value[2] != "") {
+           if (storedUserData.value.isNotEmpty() && storedUserData.value[0] != "" && storedUserData.value[1] != "" && storedUserData.value[2] != "") {
                 email = storedUserData.value[0]
                 password = storedUserData.value[1]
                 if (storedUserData.value[2] == "true") {
@@ -152,7 +153,7 @@ fun ScaffoldLoginScreen(navigationController: NavHostController, myViewModel: Ma
                                     showPassword = !showPassword
                                 }
                             )
-                        },
+                        }
                     )
                     Row(
                         modifier = Modifier
@@ -166,7 +167,10 @@ fun ScaffoldLoginScreen(navigationController: NavHostController, myViewModel: Ma
                         )
                         Text(
                             text = "Remember me?",
-                            modifier = Modifier
+                            style = TextStyle(
+                                fontFamily = coolveticaRg
+                            ),
+                            fontSize = 14.sp
                         )
                     }
                     Button(
@@ -225,7 +229,8 @@ fun UpperText(title: String, subtitle: String) {
         text = title,
         fontSize = 20.sp,
         style = TextStyle(
-            fontFamily = lemonMilkMediumItalic
+            fontFamily = lemonMilkMediumItalic,
+            color = Jasmine
         ),
     )
 
@@ -239,7 +244,7 @@ fun UpperText(title: String, subtitle: String) {
 }
 
 @Composable
-private fun PasswordVisibility(
+fun PasswordVisibility(
     showPassword: Boolean,
     onToggleClick: () -> Unit
 ) {
