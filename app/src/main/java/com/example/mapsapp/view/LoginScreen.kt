@@ -76,22 +76,21 @@ fun ScaffoldLoginScreen(navigationController: NavHostController, myViewModel: Ma
         ) {
             var email by rememberSaveable { mutableStateOf("") }
             var password by rememberSaveable { mutableStateOf("") }
-            val goToNext by myViewModel.goToNext.observeAsState()
+            val goToNext by myViewModel.goToNext.observeAsState(false)
+            if (goToNext) {
+                navigationController.navigate(Routes.MapScreen.routes)
+            }
             var rememberPassword by rememberSaveable { mutableStateOf(false) }
             var showPassword by remember { mutableStateOf(false) }
             val context = LocalContext.current
             val userPrefs = UserPrefs(context)
             val storedUserData = userPrefs.getUserData.collectAsState(initial = emptyList())
+
             if (storedUserData.value.isNotEmpty() && storedUserData.value[0] != "" && storedUserData.value[1] != "" && storedUserData.value[2] != "") {
                 email = storedUserData.value[0]
                 password = storedUserData.value[1]
-                //myViewModel.modifyProcessing()
-                myViewModel.login(storedUserData.value[0], storedUserData.value[1])
                 if (storedUserData.value[2] == "true") {
                     myViewModel.login(storedUserData.value[0], storedUserData.value[1])
-                }
-                if (goToNext == true) {
-                    navigationController.navigate(Routes.MapScreen.routes)
                 }
             }
 
@@ -179,11 +178,8 @@ fun ScaffoldLoginScreen(navigationController: NavHostController, myViewModel: Ma
                                 }
                             } else {
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    userPrefs.saveUserData("", "", "")
+                                    userPrefs.saveUserData("", "", "false")
                                 }
-                            }
-                            if (myViewModel.goToNext.value == true) {
-                                navigationController.navigate(Routes.MapScreen.routes)
                             }
                         },
                         modifier = Modifier

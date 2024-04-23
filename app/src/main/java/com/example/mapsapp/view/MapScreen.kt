@@ -93,7 +93,6 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.example.mapsapp.R
 import com.google.android.gms.maps.model.BitmapDescriptor
-import com.google.maps.android.compose.MarkerInfoWindowContent
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.CoroutineScope
@@ -237,7 +236,12 @@ fun Mydrawer(myViewModel: MapsViewModel, navigationController: NavHostController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyTopAppBar(myViewModel: MapsViewModel, state: DrawerState) {
+fun MyTopAppBar(
+    myViewModel: MapsViewModel,
+    state: DrawerState,
+    navigationController: NavHostController
+) {
+
     val scope = rememberCoroutineScope()
     TopAppBar(
         title = {
@@ -256,9 +260,15 @@ fun MyTopAppBar(myViewModel: MapsViewModel, state: DrawerState) {
             }) {
                 Icon(imageVector = Icons.Filled.Menu, contentDescription = "Menu")
             }
+        },
+        actions = {
+            Filter(navigationController, myViewModel)
+
         }
+
     )
 }
+
 
 @OptIn(
     ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class,
@@ -304,7 +314,7 @@ fun ScaffoldMapScreen(
         }
     )
     Scaffold(
-        topBar = { MyTopAppBar(myViewModel, state) }
+        topBar = { MyTopAppBar(myViewModel, state, navigationController) }
     ) { contentPadding ->
         Box(modifier = Modifier.padding(contentPadding))
         {

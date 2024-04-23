@@ -2,6 +2,8 @@ package com.example.mapsapp.view
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,32 +18,47 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.AbsoluteCutCornerShape
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Card
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DirectionsSubwayFilled
+import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.mapsapp.R
+import com.example.mapsapp.Routes
 import com.example.mapsapp.model.MarkersCategories
 import com.example.mapsapp.ui.theme.CoolGray2
 import com.example.mapsapp.ui.theme.Jasmine
 import com.example.mapsapp.ui.theme.PrussianBlue
 import com.example.mapsapp.viewmodel.MapsViewModel
+import com.example.mapsapp.viewmodel.lemonMilkMediumItalic
 import com.example.mapsapp.viewmodel.lemonMilkRegularItalic
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
@@ -65,7 +82,7 @@ fun ScaffoldSavedMarkerScreen(
     val markers by myViewModel.markers.observeAsState()
     val categories by myViewModel.categories.observeAsState()
     Scaffold(
-        topBar = { MyTopAppBar(myViewModel, state) }
+        topBar = { MyTopAppBar(myViewModel, state, navigationController) }
     ) { contentPadding ->
         Box(
             modifier = Modifier
@@ -145,6 +162,68 @@ fun MarkerList(marker: MapsViewModel.Marker, categories: List<MarkersCategories>
                         fontFamily = lemonMilkRegularItalic,
                         color = CoolGray2
                     )
+                )
+            }
+
+        }
+    }
+}
+
+
+
+@Composable
+fun Filter(
+    navigationController: NavHostController, myViewModel: MapsViewModel,
+) {
+    val navBackStackEntry by navigationController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+    var isDropdownExpanded by remember { mutableStateOf(false) }
+    val category by myViewModel.category.observeAsState()
+    if (currentRoute == Routes.SavedMarkersScreen.routes) {
+        IconButton(
+            onClick = {
+                isDropdownExpanded = !isDropdownExpanded
+            },
+            content = {
+                Icon(
+                    imageVector = Icons.Filled.FilterList,
+                    contentDescription = "Filter"
+                )
+            }
+        )
+        DropdownMenu(
+            expanded = isDropdownExpanded,
+            onDismissRequest = { isDropdownExpanded = false },
+            modifier = Modifier
+                .background(
+                    color = MaterialTheme.colorScheme.background
+                )
+        ) {
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        text = "All",
+                        color = CoolGray2,
+                        style = TextStyle(fontFamily = lemonMilkMediumItalic)
+                        )
+                },
+                onClick = {
+                    myViewModel.getMarkers()
+                }
+            )
+            myViewModel.categories.value?.forEach { item ->
+                DropdownMenuItem(
+                    enabled = category != item.name,
+                    text = {
+                        Text(
+                            text = item.name,
+                            color = item.color,
+                            style = TextStyle(fontFamily = lemonMilkMediumItalic)
+                        )
+                    },
+                    onClick = {
+                        myViewModel.getMarkersFiltered(item.name)
+                    }
                 )
             }
 

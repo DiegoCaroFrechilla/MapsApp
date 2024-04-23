@@ -181,6 +181,25 @@ class MapsViewModel : ViewModel() {
         }
     }
 
+    fun getMarkersFiltered(category: String?) {
+        repository.getMarkers().whereEqualTo("user ID", userId.value).whereEqualTo("category", category)
+            .addSnapshotListener { value, error ->
+                if (error != null) {
+                    Log.e("Firestore error", error.message.toString())
+                    return@addSnapshotListener
+                }
+                val tempList = mutableListOf<Marker>()
+                for (dc: DocumentChange in value?.documentChanges!!) {
+                    if (dc.type == DocumentChange.Type.ADDED) {
+                        val newMarker = dc.document.toObject(Marker::class.java)
+                        newMarker.markerID = dc.document.id
+                        tempList.add(newMarker)
+                    }
+                }
+                _markers.value = tempList
+            }
+    }
+
     private val _image = MutableLiveData<Bitmap?>()
     val image = _image
 
@@ -298,4 +317,12 @@ val coolveticaRgIt = FontFamily(Font(R.font.coolvetica_rg_it))
 * Revisar Estilo paginas
 * 6
 * Control de errores log in (contraseña mal) (usuario no existente)
+*
+* Register Screen
+* Asegurarse que el eemail tiene @ y .
+* Que la contraseña tiene al menos 6 caracteres
+*
+* Login Screen
+* Que el usuario exista
+*
 * */
