@@ -1,6 +1,5 @@
 package com.example.mapsapp.model
 
-import com.example.mapsapp.viewmodel.MapsViewModel
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore

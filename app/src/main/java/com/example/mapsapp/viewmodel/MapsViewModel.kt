@@ -3,7 +3,6 @@ package com.example.mapsapp.viewmodel
 import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.lifecycle.MutableLiveData
@@ -12,7 +11,6 @@ import com.example.mapsapp.R
 import com.example.mapsapp.model.Marker
 import com.example.mapsapp.model.MarkersCategories
 import com.example.mapsapp.model.Repository
-//import com.example.mapsapp.model.UserPrefs
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
@@ -24,18 +22,33 @@ import java.util.Locale
 class MapsViewModel : ViewModel() {
     //Marker
 
-
     private val _locationName = MutableLiveData("")
     val locationName = _locationName
+
+    fun changeTitle(title: String) {
+        _locationName.value = title
+    }
 
     private val _locationDescription = MutableLiveData("")
     val locationDescription = _locationDescription
 
+    fun changeDescription(description: String) {
+        _locationDescription.value = description
+    }
+
     private val _category = MutableLiveData("")
     val category = _category
 
+    fun changeCategory(category: String) {
+        _category.value = category
+    }
+
     private val _categoryFilter = MutableLiveData("")
     val categoryFilter = _categoryFilter
+
+    fun changeCategoryFilter(category: String) {
+        _categoryFilter.value = category
+    }
 
     private val _markers = MutableLiveData<MutableList<Marker>>(mutableListOf())
     val markers = _markers
@@ -45,6 +58,20 @@ class MapsViewModel : ViewModel() {
 
     private val _showBottom = MutableLiveData(false)
     val showBottom = _showBottom
+
+    fun showBottomSheet(latLng: LatLng) {
+        _showBottom.value = true
+        _geolocation.value = latLng
+    }
+
+    fun showBottomSheet2() {
+        _showBottom.value = true
+
+    }
+
+    fun hideBottomSheet() {
+        _showBottom.value = false
+    }
 
     private val _geolocation = MutableLiveData(LatLng(0.0, 0.0))
     val geolocation = _geolocation
@@ -58,15 +85,15 @@ class MapsViewModel : ViewModel() {
     private val _markerIDSelected = MutableLiveData<Marker>()
     val markerIDSelected = _markerIDSelected
 
+    fun selectMarker(markerID: Marker) {
+        _markerIDSelected.value = markerID
+    }
+
     private val _showDialog = MutableLiveData(false)
     val showDialog = _showDialog
 
     fun showDialog(show: Boolean) {
         _showDialog.value = show
-    }
-
-    fun selectMarker(markerID: Marker) {
-        _markerIDSelected.value = markerID
     }
 
     private val _categories = MutableLiveData(
@@ -79,33 +106,7 @@ class MapsViewModel : ViewModel() {
     )
 
     val categories = _categories
-    fun changeTitle(title: String) {
-        _locationName.value = title
-    }
 
-    fun changeDescription(description: String) {
-        _locationDescription.value = description
-    }
-
-    fun changeCategory(category: String) {
-        _category.value = category
-    }
-    fun changeCategoryFilter(category: String) {
-        _categoryFilter.value = category
-    }
-
-    fun showBottomSheet(latLng: LatLng) {
-        _showBottom.value = true
-        _geolocation.value = latLng
-    }
-    fun showBottomSheet2() {
-        _showBottom.value = true
-
-    }
-
-    fun hideBottomSheet() {
-        _showBottom.value = false
-    }
 
     fun CreateMarker(
         locationName: String,
@@ -142,7 +143,7 @@ class MapsViewModel : ViewModel() {
         image: String?,
         category: String?,
         markerID: String,
-    ){
+    ) {
         val currentMarkers = _markers.value ?: mutableListOf()
         newMarker =
             geolocation.value?.let {
@@ -164,7 +165,8 @@ class MapsViewModel : ViewModel() {
         getMarkers()
         hideBottomSheet()
     }
-    fun DeleteMarker(marker: String){
+
+    fun DeleteMarker(marker: String) {
         Repository().deleteMarker(marker)
     }
 
@@ -172,19 +174,19 @@ class MapsViewModel : ViewModel() {
     private val _cameraPermissionGranted = MutableLiveData(false)
     val cameraPermissionGranted = _cameraPermissionGranted
 
-    private val _shouldShowPermissionRationale = MutableLiveData(false)
-    val shouldShowPermissionRationale = _shouldShowPermissionRationale
-
-    private val _showPermissionDenied = MutableLiveData(false)
-    val showPermissionDenied = _showPermissionDenied
-
     fun setCameraPermissionGranted(granted: Boolean) {
         _cameraPermissionGranted.value = granted
     }
 
+    private val _shouldShowPermissionRationale = MutableLiveData(false)
+    val shouldShowPermissionRationale = _shouldShowPermissionRationale
+
     fun setShouldShowPermissionRationale(should: Boolean) {
         _shouldShowPermissionRationale.value = should
     }
+
+    private val _showPermissionDenied = MutableLiveData(false)
+    val showPermissionDenied = _showPermissionDenied
 
     fun setShowPermissionDenied(denied: Boolean) {
         _showPermissionDenied.value = denied
@@ -325,7 +327,6 @@ class MapsViewModel : ViewModel() {
             }
     }
 
-
     fun login(username: String?, password: String?) {
         auth.signInWithEmailAndPassword(username!!, password!!)
             .addOnCompleteListener { task ->
@@ -334,16 +335,11 @@ class MapsViewModel : ViewModel() {
                     _loggedUser.value = task.result.user?.email?.split("@")?.get(0)
                     _goToNext.value = true
                 }
-//                modifyProcessing()
             }.addOnFailureListener {
                 _showToast.value = true
                 _goToNext.value = false
             }
     }
-
-    /*    private fun modifyProcessing(): AuthResult? {
-    //TODO Circle progress bar
-        }*/
 
     fun logout() {
         auth.signOut()
@@ -351,7 +347,6 @@ class MapsViewModel : ViewModel() {
     }
 }
 
-//TODO Cambiar nombre e importar fuentes
 val lemonMilkBold = FontFamily(Font(R.font.lemon_milk_bold))
 val lemonMilkBoldItalic = FontFamily(Font(R.font.lemon_milk_bold_italic))
 val lemonMilkLight = FontFamily(Font(R.font.lemon_milk_light))
@@ -368,22 +363,3 @@ val coolveticaRg = FontFamily(Font(R.font.coolvetica_rg))
 val coolveticaRgIt = FontFamily(Font(R.font.coolvetica_rg_it))
 
 
-/*
-* TODO
-* Hacer Log In/Out ✅
-* Hacer Fotos
-* Modificar eliminar marcadores
-* Filtrar marcadores ✅
-* Hacer pagina detall del marcador
-* Revisar Estilo paginas
-* 6
-* Control de errores log in (contraseña mal) (usuario no existente)
-*
-* Register Screen
-* Asegurarse que el eemail tiene @ y .
-* Que la contraseña tiene al menos 6 caracteres
-*
-* Login Screen
-* Que el usuario exista
-*
-* */

@@ -21,12 +21,10 @@ import androidx.compose.foundation.shape.AbsoluteCutCornerShape
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Card
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -54,23 +52,16 @@ import com.example.mapsapp.model.Marker
 import com.example.mapsapp.model.MarkersCategories
 import com.example.mapsapp.ui.theme.CoolGray2
 import com.example.mapsapp.ui.theme.Jasmine
-import com.example.mapsapp.ui.theme.LightRed
 import com.example.mapsapp.ui.theme.PrussianBlue
 import com.example.mapsapp.viewmodel.MapsViewModel
 import com.example.mapsapp.viewmodel.lemonMilkMediumItalic
 import com.example.mapsapp.viewmodel.lemonMilkRegularItalic
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SavedMarkersScreen(navigationController: NavHostController, myViewModel: MapsViewModel) {
 
 }
 
-@OptIn(
-    ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class,
-    ExperimentalPermissionsApi::class
-)
 @Composable
 fun ScaffoldSavedMarkerScreen(
     navigationController: NavHostController,
@@ -157,7 +148,7 @@ fun MarkerList(
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column {
-                when(marker!!.category) {
+                when (marker!!.category) {
                     categories?.get(0)?.name -> categories?.get(0)?.color
                     categories?.get(1)?.name -> categories?.get(1)?.color
                     categories?.get(2)?.name -> categories?.get(2)?.color
@@ -186,7 +177,6 @@ fun MarkerList(
 }
 
 
-
 @Composable
 fun Filter(
     navigationController: NavHostController, myViewModel: MapsViewModel,
@@ -196,55 +186,55 @@ fun Filter(
     var isDropdownExpanded by remember { mutableStateOf(false) }
     val category by myViewModel.categoryFilter.observeAsState()
     //if (currentRoute == Routes.SavedMarkersScreen.routes) {
-        IconButton(
-            onClick = {
-                isDropdownExpanded = !isDropdownExpanded
-            },
-            content = {
-                Icon(
-                    imageVector = Icons.Filled.FilterList,
-                    contentDescription = "Filter"
+    IconButton(
+        onClick = {
+            isDropdownExpanded = !isDropdownExpanded
+        },
+        content = {
+            Icon(
+                imageVector = Icons.Filled.FilterList,
+                contentDescription = "Filter"
+            )
+        }
+    )
+    DropdownMenu(
+        expanded = isDropdownExpanded,
+        onDismissRequest = { isDropdownExpanded = false },
+        modifier = Modifier
+            .background(
+                color = MaterialTheme.colorScheme.background
+            )
+    ) {
+        DropdownMenuItem(
+            text = {
+                Text(
+                    text = "All",
+                    color = CoolGray2,
+                    style = TextStyle(fontFamily = lemonMilkMediumItalic)
                 )
+            },
+            onClick = {
+                myViewModel.getMarkers()
             }
         )
-        DropdownMenu(
-            expanded = isDropdownExpanded,
-            onDismissRequest = { isDropdownExpanded = false },
-            modifier = Modifier
-                .background(
-                    color = MaterialTheme.colorScheme.background
-                )
-        ) {
+        myViewModel.categories.value?.forEach { item ->
             DropdownMenuItem(
+                enabled = category != item.name,
                 text = {
                     Text(
-                        text = "All",
-                        color = CoolGray2,
+                        text = item.name,
+                        color = item.color,
                         style = TextStyle(fontFamily = lemonMilkMediumItalic)
-                        )
+                    )
                 },
                 onClick = {
-                    myViewModel.getMarkers()
+                    myViewModel.changeCategoryFilter(item.name)
+                    myViewModel.getMarkersFiltered(item.name)
                 }
             )
-            myViewModel.categories.value?.forEach { item ->
-                DropdownMenuItem(
-                    enabled = category != item.name,
-                    text = {
-                        Text(
-                            text = item.name,
-                            color = item.color,
-                            style = TextStyle(fontFamily = lemonMilkMediumItalic)
-                        )
-                    },
-                    onClick = {
-                        myViewModel.changeCategoryFilter(item.name)
-                        myViewModel.getMarkersFiltered(item.name)
-                    }
-                )
-            }
         }
     }
+}
 //}
 
 

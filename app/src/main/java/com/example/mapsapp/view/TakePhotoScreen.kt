@@ -10,7 +10,6 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
-import androidx.camera.core.Preview
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
@@ -43,7 +42,6 @@ import androidx.navigation.NavHostController
 import com.example.mapsapp.Routes
 import com.example.mapsapp.viewmodel.MapsViewModel
 import java.io.OutputStream
-import java.lang.Exception
 
 @Composable
 fun TakePhotoScreen(navigationController: NavHostController, myViewModel: MapsViewModel) {
