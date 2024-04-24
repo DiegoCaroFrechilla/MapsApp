@@ -98,6 +98,10 @@ class MapsViewModel : ViewModel() {
         _showBottom.value = true
         _geolocation.value = latLng
     }
+    fun showBottomSheet2() {
+        _showBottom.value = true
+
+    }
 
     fun hideBottomSheet() {
         _showBottom.value = false
@@ -132,6 +136,34 @@ class MapsViewModel : ViewModel() {
         hideBottomSheet()
     }
 
+    fun EditMarker(
+        locationName: String,
+        locationDescription: String,
+        image: String?,
+        category: String?,
+        markerID: String,
+    ){
+        val currentMarkers = _markers.value ?: mutableListOf()
+        newMarker =
+            geolocation.value?.let {
+                Marker(
+                    userId.value!!,
+                    markerID = markerID,
+                    title = locationName,
+                    latitude = _geolocation.value!!.latitude,
+                    longitude = _geolocation.value!!.longitude,
+                    description = locationDescription,
+                    image = image,
+                    category = category
+                )
+            }!!
+        if (newMarker != null) {
+            Repository().editMarker(newMarker)
+        }
+        _markers.value = currentMarkers
+        getMarkers()
+        hideBottomSheet()
+    }
     fun DeleteMarker(marker: String){
         Repository().deleteMarker(marker)
     }
