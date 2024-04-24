@@ -1,4 +1,5 @@
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -86,16 +87,14 @@ fun ScaffoldLoginScreen(navigationController: NavHostController, myViewModel: Ma
             val context = LocalContext.current
             val userPrefs = UserPrefs(context)
             val storedUserData = userPrefs.getUserData.collectAsState(initial = emptyList())
-
-           if (storedUserData.value.isNotEmpty() && storedUserData.value[0] != "" && storedUserData.value[1] != "" && storedUserData.value[2] != "") {
+            val showToast by myViewModel.showToast.observeAsState()
+            if (storedUserData.value.isNotEmpty() && storedUserData.value[0] != "" && storedUserData.value[1] != "" && storedUserData.value[2] != "") {
                 email = storedUserData.value[0]
                 password = storedUserData.value[1]
                 if (storedUserData.value[2] == "true") {
                     myViewModel.login(storedUserData.value[0], storedUserData.value[1])
                 }
             }
-
-
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -135,6 +134,13 @@ fun ScaffoldLoginScreen(navigationController: NavHostController, myViewModel: Ma
                             fontFamily = lemonMilkMediumItalic
                         ),
                     )
+                    Column {
+                        if (showToast == true) {
+
+                            Toast.makeText(context, "ERROR", Toast.LENGTH_SHORT).show()
+                        }
+                        myViewModel.hideToast()
+                    }
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },

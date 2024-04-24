@@ -55,7 +55,7 @@ import com.example.mapsapp.viewmodel.lemonMilkMediumItalic
 @Composable
 fun GalleryScreen(navigationController: NavHostController, myViewModel: MapsViewModel) {
     val context = LocalContext.current
-    val img: Bitmap? = ContextCompat.getDrawable(context, R.drawable.imagegallery)?.toBitmap()
+    val img: Bitmap? = ContextCompat.getDrawable(context, R.drawable.empty_image)?.toBitmap()
     var uri: Uri? by remember { mutableStateOf(null) }
     var bitmap by remember { mutableStateOf(img) }
     val launchImage = rememberLauncherForActivityResult(
@@ -88,7 +88,7 @@ fun GalleryScreen(navigationController: NavHostController, myViewModel: MapsView
             modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
                 .size(250.dp)
-                .background(Jasmine)
+                .background(CoolGray2)
                 .border(width = 1.dp, color = CoolGray2, shape = RoundedCornerShape(8.dp))
         )
         Row(

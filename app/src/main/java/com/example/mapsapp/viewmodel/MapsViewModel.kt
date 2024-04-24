@@ -3,11 +3,13 @@ package com.example.mapsapp.viewmodel
 import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mapsapp.R
+import com.example.mapsapp.model.Marker
 import com.example.mapsapp.model.MarkersCategories
 import com.example.mapsapp.model.Repository
 //import com.example.mapsapp.model.UserPrefs
@@ -21,18 +23,7 @@ import java.util.Locale
 
 class MapsViewModel : ViewModel() {
     //Marker
-    data class Marker(
-        var userId: String,
-        var markerID: String? = null,
-        val title: String,
-        val latitude: Double,
-        val longitude: Double,
-        val description: String,
-        var image: String?,
-        var category: String?
-    ) {
-        constructor() : this("", null, "", 0.0, 0.0, "", null, null)
-    }
+
 
     private val _locationName = MutableLiveData("")
     val locationName = _locationName
@@ -42,6 +33,9 @@ class MapsViewModel : ViewModel() {
 
     private val _category = MutableLiveData("")
     val category = _category
+
+    private val _categoryFilter = MutableLiveData("")
+    val categoryFilter = _categoryFilter
 
     private val _markers = MutableLiveData<MutableList<Marker>>(mutableListOf())
     val markers = _markers
@@ -63,6 +57,13 @@ class MapsViewModel : ViewModel() {
 
     private val _markerIDSelected = MutableLiveData<Marker>()
     val markerIDSelected = _markerIDSelected
+
+    private val _showDialog = MutableLiveData(false)
+    val showDialog = _showDialog
+
+    fun showDialog(show: Boolean) {
+        _showDialog.value = show
+    }
 
     fun selectMarker(markerID: Marker) {
         _markerIDSelected.value = markerID
@@ -88,6 +89,9 @@ class MapsViewModel : ViewModel() {
 
     fun changeCategory(category: String) {
         _category.value = category
+    }
+    fun changeCategoryFilter(category: String) {
+        _categoryFilter.value = category
     }
 
     fun showBottomSheet(latLng: LatLng) {
@@ -126,6 +130,10 @@ class MapsViewModel : ViewModel() {
         _markers.value = currentMarkers
         getMarkers()
         hideBottomSheet()
+    }
+
+    fun DeleteMarker(marker: String){
+        Repository().deleteMarker(marker)
     }
 
     //Camera
@@ -265,6 +273,13 @@ class MapsViewModel : ViewModel() {
     private val _loggedUser = MutableLiveData<String>()
     val loggedUser = _loggedUser
 
+    private val _showToast = MutableLiveData<Boolean>(false)
+    val showToast = _showToast
+
+    fun hideToast() {
+        _showToast != _showToast
+    }
+
     fun register(username: String, password: String) {
         auth.createUserWithEmailAndPassword(username, password)
             .addOnCompleteListener { task ->
@@ -286,11 +301,11 @@ class MapsViewModel : ViewModel() {
                     _userId.value = task.result.user?.uid
                     _loggedUser.value = task.result.user?.email?.split("@")?.get(0)
                     _goToNext.value = true
-                } else {
-                    _goToNext.value = false
-                    Log.d("Error", "Error signing in ${task.result}")
                 }
 //                modifyProcessing()
+            }.addOnFailureListener {
+                _showToast.value = true
+                _goToNext.value = false
             }
     }
 

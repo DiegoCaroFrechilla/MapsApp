@@ -50,9 +50,11 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.mapsapp.R
 import com.example.mapsapp.Routes
+import com.example.mapsapp.model.Marker
 import com.example.mapsapp.model.MarkersCategories
 import com.example.mapsapp.ui.theme.CoolGray2
 import com.example.mapsapp.ui.theme.Jasmine
+import com.example.mapsapp.ui.theme.LightRed
 import com.example.mapsapp.ui.theme.PrussianBlue
 import com.example.mapsapp.viewmodel.MapsViewModel
 import com.example.mapsapp.viewmodel.lemonMilkMediumItalic
@@ -104,7 +106,7 @@ fun ScaffoldSavedMarkerScreen(
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun MarkerList(
-    marker: MapsViewModel.Marker,
+    marker: Marker,
     categories: List<MarkersCategories>?,
     navigationController: NavHostController,
     myViewModel: MapsViewModel
@@ -143,8 +145,8 @@ fun MarkerList(
                         categories?.get(0)?.name -> painterResource(id = R.drawable.locationlogopink)
                         categories?.get(1)?.name -> painterResource(id = R.drawable.locationlogoblue)
                         categories?.get(2)?.name -> painterResource(id = R.drawable.locationlogogreen)
-                        categories?.get(3)?.name -> painterResource(id = R.drawable.locationlogo)
-                        else -> painterResource(id = R.drawable.locationlogored)
+                        categories?.get(3)?.name -> painterResource(id = R.drawable.locationlogored)
+                        else -> painterResource(id = R.drawable.locationlogo)
                     },
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
@@ -155,13 +157,21 @@ fun MarkerList(
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column {
-                Text(
-                    text = marker.title,
-                    style = TextStyle(
-                        fontFamily = lemonMilkRegularItalic,
-                        color = Jasmine
+                when(marker!!.category) {
+                    categories?.get(0)?.name -> categories?.get(0)?.color
+                    categories?.get(1)?.name -> categories?.get(1)?.color
+                    categories?.get(2)?.name -> categories?.get(2)?.color
+                    categories?.get(3)?.name -> categories?.get(3)?.color
+                    else -> Jasmine
+                }?.let {
+                    Text(
+                        text = marker.title,
+                        style = TextStyle(
+                            fontFamily = lemonMilkRegularItalic,
+                            color = it
+                        )
                     )
-                )
+                }
                 Text(
                     text = marker.description,
                     style = TextStyle(
@@ -184,7 +194,7 @@ fun Filter(
     val navBackStackEntry by navigationController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     var isDropdownExpanded by remember { mutableStateOf(false) }
-    val category by myViewModel.category.observeAsState()
+    val category by myViewModel.categoryFilter.observeAsState()
     //if (currentRoute == Routes.SavedMarkersScreen.routes) {
         IconButton(
             onClick = {
@@ -228,11 +238,11 @@ fun Filter(
                         )
                     },
                     onClick = {
+                        myViewModel.changeCategoryFilter(item.name)
                         myViewModel.getMarkersFiltered(item.name)
                     }
                 )
             }
-
         }
     }
 //}

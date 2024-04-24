@@ -12,6 +12,9 @@ import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +25,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -60,6 +64,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -170,6 +177,9 @@ fun Mydrawer(myViewModel: MapsViewModel, navigationController: NavHostController
                         onClick = {
                             if (currentRoute != item.route) {
                                 navigationController.navigate(item.route)
+                                scope.launch {
+                                    state.close()
+                                }
                             }
                         }
                     )
@@ -376,6 +386,29 @@ fun ScaffoldMapScreen(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .padding(top = 10.dp),
+                                horizontalArrangement = Arrangement.Start
+                            ) {
+                                if (image != null) {
+                                    Image(
+                                        bitmap = image!!.asImageBitmap(),
+                                        contentDescription = "Image",
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .size(250.dp)
+                                            .border(
+                                                width = 1.dp,
+                                                color = CoolGray2,
+                                                shape = RoundedCornerShape(8.dp)
+                                            )
+                                    )
+                                }
+                            }
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
                                     .horizontalScroll(rememberScrollState())
                             ) {
                                 categories!!.forEach { item ->
@@ -403,6 +436,7 @@ fun ScaffoldMapScreen(
                                     }
                                 }
                             }
+
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -428,7 +462,6 @@ fun ScaffoldMapScreen(
                                         contentDescription = "Take photo",
                                     )
                                 }
-//                                if (image != null) Image(bitmap = image!!.asImageBitmap(), contentDescription = "Image")
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Button(
                                     onClick = {
@@ -524,7 +557,7 @@ fun Map(myViewModel: MapsViewModel, categories: List<MarkersCategories>) {
                 state = MarkerState(position = itb),
                 title = "ITB",
                 snippet = "Marker at ITB",
-                icon = bitmapDescriptorFromVector(context, R.drawable.locationlogored)
+                icon = bitmapDescriptorFromVector(context, R.drawable.locationlogo)
             )
             val markers by myViewModel.markers.observeAsState()
             markers?.forEach {
@@ -551,10 +584,10 @@ fun Map(myViewModel: MapsViewModel, categories: List<MarkersCategories>) {
 
                         categories[3].name -> bitmapDescriptorFromVector(
                             context,
-                            R.drawable.locationlogo
+                            R.drawable.locationlogored
                         )
 
-                        else -> bitmapDescriptorFromVector(context, R.drawable.locationlogored)
+                        else -> bitmapDescriptorFromVector(context, R.drawable.locationlogo)
                     },
                 )
             }

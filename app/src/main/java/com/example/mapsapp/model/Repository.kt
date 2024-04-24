@@ -8,7 +8,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 class Repository {
     private val database = FirebaseFirestore.getInstance()
 
-    fun addMarker(marker: MapsViewModel.Marker) {
+    fun addMarker(marker: Marker) {
         database.collection("markers")
             .add(
                 hashMapOf(
@@ -23,7 +23,7 @@ class Repository {
             )
     }
 
-    fun editMarker(editedMarker: MapsViewModel.Marker) {
+    fun editMarker(editedMarker: Marker) {
         database.collection("markers").document(editedMarker.markerID!!).set(
             hashMapOf(
                 "title" to editedMarker.title,

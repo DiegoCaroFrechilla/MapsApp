@@ -12,6 +12,6 @@ sealed class MarkersCategories(val name: String, val color: Color, image: Int) {
     object Home : MarkersCategories("Home", PersianPink, R.drawable.locationlogopink)
     object Shop : MarkersCategories("Shop", TropicalIndigo, R.drawable.locationlogoblue)
     object Restaurants : MarkersCategories("Restaurants", ScreaminGreen, R.drawable.locationlogogreen)
-    object Supermarkets : MarkersCategories("Supermarkets", Jasmine, R.drawable.locationlogo)
-    object Default: MarkersCategories("Default", LightRed, R.drawable.locationlogored)
+    object Supermarkets : MarkersCategories("Supermarkets", LightRed, R.drawable.locationlogored)
+    object Default: MarkersCategories("Default", Jasmine, R.drawable.locationlogo)
 }

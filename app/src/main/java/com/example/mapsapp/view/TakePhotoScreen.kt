@@ -1,7 +1,10 @@
 package com.example.mapsapp.view
 
+import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
+import android.net.Uri
+import android.provider.MediaStore
 import android.util.Log
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -25,7 +28,10 @@ import androidx.compose.material.icons.filled.Cameraswitch
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -36,10 +42,12 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import com.example.mapsapp.Routes
 import com.example.mapsapp.viewmodel.MapsViewModel
+import java.io.OutputStream
 import java.lang.Exception
 
 @Composable
 fun TakePhotoScreen(navigationController: NavHostController, myViewModel: MapsViewModel) {
+    var uri: Uri? by remember { mutableStateOf(null) }
     val context = LocalContext.current
     val controller = remember {
         LifecycleCameraController(context).apply {
@@ -86,10 +94,12 @@ fun TakePhotoScreen(navigationController: NavHostController, myViewModel: MapsVi
                 }
                 IconButton(onClick = {
                     takePhoto(context, controller) { photo ->
-                        //TODO
+                        uri = bitmapToUri(context, photo)
+                        if (uri != null) myViewModel.choosenImage(photo, uri!!)
+                        navigationController.navigateUp()
                     }
                 }) {
-                        Icon(imageVector = Icons.Default.PhotoCamera, contentDescription = "Take photo")
+                    Icon(imageVector = Icons.Default.PhotoCamera, contentDescription = "Take photo")
                 }
             }
         }
@@ -131,4 +141,24 @@ fun CameraPreview(
         },
         modifier = modifier
     )
+}
+
+fun bitmapToUri(context: Context, bitmap: Bitmap): Uri? {
+    val filename = "${System.currentTimeMillis()}.jpg"
+    val values = ContentValues().apply {
+        put(MediaStore.Images.Media.TITLE, filename)
+        put(MediaStore.Images.Media.DISPLAY_NAME, filename)
+        put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+        put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis())
+        put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis())
+    }
+
+    val uri: Uri? =
+        context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+    uri?.let {
+        val outstream: OutputStream? = context.contentResolver.openOutputStream(it)
+        outstream?.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
+        outstream?.close()
+    }
+    return uri
 }
